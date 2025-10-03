@@ -1,27 +1,19 @@
-import type { Metadata } from 'next'
-import { GeistSans } from 'geist/font/sans'
-import { GeistMono } from 'geist/font/mono'
-import { Analytics } from '@vercel/analytics/next'
+// app/layout.tsx
 import './globals.css'
+import type { ReactNode } from 'react'
 
-export const metadata: Metadata = {
-title: 'v0 App',
-description: 'Created with v0',
-generator: 'v0.app',
+export const metadata = {
+  title: 'Door.id',                // Ganti sesuai kebutuhan
+  description: 'Short link platform sederhana'
 }
 
-export default function RootLayout({
-children,
-}: Readonly<{
-children: React.ReactNode
-}>) {
-return (
-<html lang="en">
-<body className={font-sans ${GeistSans.variable} ${GeistMono.variable}}>
-{children}
-<Analytics />
-</body>
-</html>
-)
+export default function RootLayout({ children }: { children: ReactNode }) {
+  return (
+    <html lang="id">
+      <head />
+      <body>
+        {children}
+      </body>
+    </html>
+  )
 }
-
