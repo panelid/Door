@@ -2,6 +2,32 @@ import { notFound, redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import PastePage from "@/components/paste-page"
 import LinktreePage from "@/components/linktree-page"
+import type { Metadata } from "next"
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params
+  const supabase = await createClient()
+  const { data: slugData } = await supabase.from("slugs").select("*").eq("slug", slug).maybeSingle()
+
+  if (!slugData) {
+    return {
+      title: "Link Not Found",
+      description: "The requested link could not be found.",
+    }
+  }
+
+  const titles: Record<string, string> = {
+    whatsapp: `WhatsApp Link - ${slug}`,
+    paste: `Paste - ${slug}`,
+    linktree: `Links - @${slug}`,
+    shorturl: `Short URL - ${slug}`,
+  }
+
+  return {
+    title: titles[slugData.type] || slug,
+    description: `View ${slug} on Door.id - Your link management platform`,
+  }
+}
 
 export default async function SlugPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
@@ -21,7 +47,6 @@ export default async function SlugPage({ params }: { params: Promise<{ slug: str
 
   console.log("[v0] SlugPage - Slug type:", slugData.type)
 
-  // Handle different slug types
   switch (slugData.type) {
     case "whatsapp": {
       const phone = slugData.data.phone.replace(/\D/g, "")

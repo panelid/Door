@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { MessageSquare, Link2, FileText, Users } from "lucide-react"
+import { MessageSquare, Link2, FileText, Users, Sparkles, Zap, Shield } from "lucide-react"
 
 export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -28,7 +28,6 @@ export default function HomePage() {
     const supabase = createClient()
 
     try {
-      // Check if user is authenticated
       const {
         data: { user },
       } = await supabase.auth.getUser()
@@ -40,7 +39,6 @@ export default function HomePage() {
 
       const slug = formData.get("slug") as string
 
-      // Check if slug already exists
       const { data: existingSlug } = await supabase.from("slugs").select("slug").eq("slug", slug).single()
 
       if (existingSlug) {
@@ -97,59 +95,106 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Link2 className="h-5 w-5" />
+    <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-accent/30 animate-gradient">
+      <header className="border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+        <div className="container flex h-20 items-center justify-between">
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/70 text-primary-foreground shadow-lg group-hover:shadow-xl transition-all group-hover:scale-105">
+              <Link2 className="h-6 w-6" />
             </div>
-            <span className="text-xl font-bold">Door.id</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" asChild>
+            <span className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+              Door.id
+            </span>
+          </Link>
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" asChild className="hidden sm:flex">
               <Link href="/dashboard">Dashboard</Link>
             </Button>
-            <Button asChild>
-              <Link href="/auth/login">Login</Link>
+            <Button asChild className="shadow-lg hover:shadow-xl transition-all">
+              <Link href="/auth/login">Masuk</Link>
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="container py-12">
-        <div className="mx-auto max-w-4xl space-y-8">
-          <div className="text-center space-y-4">
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-              One Link, Infinite Possibilities
+      <main className="container py-16 md:py-24">
+        <div className="mx-auto max-w-6xl space-y-16">
+          <div className="text-center space-y-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-sm font-medium text-primary mb-4">
+              <Sparkles className="h-4 w-4" />
+              Platform Link Management Terbaik di Indonesia
+            </div>
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-balance leading-tight">
+              Satu Link,{" "}
+              <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
+                Kemungkinan Tak Terbatas
+              </span>
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Create custom short links for WhatsApp, share text snippets, build your link-in-bio, or shorten any URL.
-              All in one place.
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed text-pretty">
+              Buat link WhatsApp custom, bagikan teks, bangun link-in-bio Anda, atau perpendek URL apapun. Semua dalam
+              satu platform yang powerful dan mudah digunakan.
             </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto pt-8">
+              <div className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-card/50 backdrop-blur border border-border/50 hover:border-primary/50 transition-all hover:shadow-lg">
+                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Zap className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-semibold text-lg">Super Cepat</h3>
+                <p className="text-sm text-muted-foreground text-center">Buat link custom dalam hitungan detik</p>
+              </div>
+              <div className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-card/50 backdrop-blur border border-border/50 hover:border-primary/50 transition-all hover:shadow-lg">
+                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Shield className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-semibold text-lg">Aman & Terpercaya</h3>
+                <p className="text-sm text-muted-foreground text-center">Data Anda dilindungi dengan enkripsi</p>
+              </div>
+              <div className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-card/50 backdrop-blur border border-border/50 hover:border-primary/50 transition-all hover:shadow-lg">
+                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Sparkles className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-semibold text-lg">Mudah Digunakan</h3>
+                <p className="text-sm text-muted-foreground text-center">Interface intuitif untuk semua orang</p>
+              </div>
+            </div>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Create Your Link</CardTitle>
-              <CardDescription>Choose a feature below and create your custom link</CardDescription>
+          <Card className="shadow-2xl border-border/50 backdrop-blur">
+            <CardHeader className="space-y-3">
+              <CardTitle className="text-3xl">Buat Link Anda</CardTitle>
+              <CardDescription className="text-base">
+                Pilih fitur di bawah dan buat link custom Anda sekarang
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Tabs defaultValue="whatsapp" className="w-full">
-                <TabsList className="grid w-full grid-cols-4">
-                  <TabsTrigger value="whatsapp" className="gap-2">
+                <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto p-1 bg-muted/50">
+                  <TabsTrigger
+                    value="whatsapp"
+                    className="gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  >
                     <MessageSquare className="h-4 w-4" />
                     <span className="hidden sm:inline">WhatsApp</span>
                   </TabsTrigger>
-                  <TabsTrigger value="paste" className="gap-2">
+                  <TabsTrigger
+                    value="paste"
+                    className="gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  >
                     <FileText className="h-4 w-4" />
                     <span className="hidden sm:inline">Paste</span>
                   </TabsTrigger>
-                  <TabsTrigger value="linktree" className="gap-2">
+                  <TabsTrigger
+                    value="linktree"
+                    className="gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  >
                     <Users className="h-4 w-4" />
                     <span className="hidden sm:inline">Linktree</span>
                   </TabsTrigger>
-                  <TabsTrigger value="shorturl" className="gap-2">
+                  <TabsTrigger
+                    value="shorturl"
+                    className="gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  >
                     <Link2 className="h-4 w-4" />
                     <span className="hidden sm:inline">Short URL</span>
                   </TabsTrigger>
@@ -172,12 +217,37 @@ export default function HomePage() {
                 </TabsContent>
               </Tabs>
 
-              {error && <div className="mt-4 p-4 bg-destructive/10 text-destructive rounded-lg text-sm">{error}</div>}
-              {success && <div className="mt-4 p-4 bg-green-500/10 text-green-600 rounded-lg text-sm">{success}</div>}
+              {error && (
+                <div className="mt-6 p-4 bg-destructive/10 border border-destructive/20 text-destructive rounded-xl text-sm font-medium">
+                  {error}
+                </div>
+              )}
+              {success && (
+                <div className="mt-6 p-4 bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 rounded-xl text-sm font-medium">
+                  {success}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
       </main>
+
+      <footer className="border-t border-border/40 bg-background/80 backdrop-blur-xl mt-24">
+        <div className="container py-12">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/70 text-primary-foreground">
+                <Link2 className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="font-bold text-lg">Door.id</p>
+                <p className="text-sm text-muted-foreground">Link Management Platform</p>
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground">© 2025 Door.id. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
@@ -196,26 +266,42 @@ function WhatsAppForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 pt-4">
-      <div className="space-y-2">
-        <Label htmlFor="wa-slug">Custom Slug</Label>
+    <form onSubmit={handleSubmit} className="space-y-6 pt-6">
+      <div className="space-y-3">
+        <Label htmlFor="wa-slug" className="text-base font-medium">
+          Custom Slug
+        </Label>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">door.id/</span>
-          <Input id="wa-slug" name="slug" placeholder="my-whatsapp" required />
+          <span className="text-sm text-muted-foreground font-medium">door.id/</span>
+          <Input id="wa-slug" name="slug" placeholder="my-whatsapp" required className="text-base" />
         </div>
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="wa-phone">WhatsApp Number (with country code)</Label>
-        <Input id="wa-phone" name="phone" placeholder="628123456789" required />
-        <p className="text-xs text-muted-foreground">Example: 628123456789 (without + or spaces)</p>
+      <div className="space-y-3">
+        <Label htmlFor="wa-phone" className="text-base font-medium">
+          Nomor WhatsApp (dengan kode negara)
+        </Label>
+        <Input id="wa-phone" name="phone" placeholder="628123456789" required className="text-base" />
+        <p className="text-sm text-muted-foreground">Contoh: 628123456789 (tanpa + atau spasi)</p>
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="wa-message">Custom Message (optional)</Label>
-        <Textarea id="wa-message" name="message" placeholder="Hi, I'm interested in..." rows={3} />
-        <p className="text-xs text-muted-foreground">This message will be pre-filled when someone opens WhatsApp</p>
+      <div className="space-y-3">
+        <Label htmlFor="wa-message" className="text-base font-medium">
+          Pesan Custom (opsional)
+        </Label>
+        <Textarea
+          id="wa-message"
+          name="message"
+          placeholder="Halo, saya tertarik dengan..."
+          rows={3}
+          className="text-base"
+        />
+        <p className="text-sm text-muted-foreground">Pesan ini akan otomatis terisi saat seseorang membuka WhatsApp</p>
       </div>
-      <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? "Creating..." : "Create WhatsApp Link"}
+      <Button
+        type="submit"
+        className="w-full h-12 text-base font-medium shadow-lg hover:shadow-xl transition-all"
+        disabled={isLoading}
+      >
+        {isLoading ? "Membuat..." : "Buat Link WhatsApp"}
       </Button>
     </form>
   )
@@ -235,27 +321,35 @@ function PasteForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 pt-4">
-      <div className="space-y-2">
-        <Label htmlFor="paste-slug">Custom Slug</Label>
+    <form onSubmit={handleSubmit} className="space-y-6 pt-6">
+      <div className="space-y-3">
+        <Label htmlFor="paste-slug" className="text-base font-medium">
+          Custom Slug
+        </Label>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">door.id/</span>
-          <Input id="paste-slug" name="slug" placeholder="my-paste" required />
+          <span className="text-sm text-muted-foreground font-medium">door.id/</span>
+          <Input id="paste-slug" name="slug" placeholder="my-paste" required className="text-base" />
         </div>
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="paste-content">Content</Label>
+      <div className="space-y-3">
+        <Label htmlFor="paste-content" className="text-base font-medium">
+          Konten
+        </Label>
         <Textarea
           id="paste-content"
           name="content"
-          placeholder="Paste your text here..."
+          placeholder="Tempel teks Anda di sini..."
           rows={8}
           required
           className="font-mono text-sm"
         />
       </div>
-      <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? "Creating..." : "Create Paste"}
+      <Button
+        type="submit"
+        className="w-full h-12 text-base font-medium shadow-lg hover:shadow-xl transition-all"
+        disabled={isLoading}
+      >
+        {isLoading ? "Membuat..." : "Buat Paste"}
       </Button>
     </form>
   )
@@ -285,35 +379,53 @@ function LinktreeForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 pt-4">
-      <div className="space-y-2">
-        <Label htmlFor="linktree-slug">Custom Slug</Label>
+    <form onSubmit={handleSubmit} className="space-y-6 pt-6">
+      <div className="space-y-3">
+        <Label htmlFor="linktree-slug" className="text-base font-medium">
+          Custom Slug
+        </Label>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">door.id/</span>
-          <Input id="linktree-slug" name="slug" placeholder="my-links" required />
+          <span className="text-sm text-muted-foreground font-medium">door.id/</span>
+          <Input id="linktree-slug" name="slug" placeholder="my-links" required className="text-base" />
         </div>
       </div>
       <div className="space-y-4">
-        <Label>Links</Label>
+        <Label className="text-base font-medium">Links</Label>
         {links.map((link, index) => (
           <div key={index} className="flex gap-2">
             <div className="flex-1 space-y-2">
-              <Input name={`link-title-${index}`} placeholder="Link Title" required />
-              <Input name={`link-url-${index}`} type="url" placeholder="https://example.com" required />
+              <Input name={`link-title-${index}`} placeholder="Judul Link" required className="text-base" />
+              <Input
+                name={`link-url-${index}`}
+                type="url"
+                placeholder="https://example.com"
+                required
+                className="text-base"
+              />
             </div>
             {links.length > 1 && (
-              <Button type="button" variant="outline" size="icon" onClick={() => removeLink(index)}>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => removeLink(index)}
+                className="h-10 w-10"
+              >
                 ×
               </Button>
             )}
           </div>
         ))}
-        <Button type="button" variant="outline" onClick={addLink} className="w-full bg-transparent">
-          + Add Link
+        <Button type="button" variant="outline" onClick={addLink} className="w-full bg-transparent h-11">
+          + Tambah Link
         </Button>
       </div>
-      <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? "Creating..." : "Create Linktree"}
+      <Button
+        type="submit"
+        className="w-full h-12 text-base font-medium shadow-lg hover:shadow-xl transition-all"
+        disabled={isLoading}
+      >
+        {isLoading ? "Membuat..." : "Buat Linktree"}
       </Button>
     </form>
   )
@@ -333,20 +445,28 @@ function ShortUrlForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 pt-4">
-      <div className="space-y-2">
-        <Label htmlFor="short-slug">Custom Slug</Label>
+    <form onSubmit={handleSubmit} className="space-y-6 pt-6">
+      <div className="space-y-3">
+        <Label htmlFor="short-slug" className="text-base font-medium">
+          Custom Slug
+        </Label>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">door.id/</span>
-          <Input id="short-slug" name="slug" placeholder="my-link" required />
+          <span className="text-sm text-muted-foreground font-medium">door.id/</span>
+          <Input id="short-slug" name="slug" placeholder="my-link" required className="text-base" />
         </div>
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="short-url">Destination URL</Label>
-        <Input id="short-url" name="url" type="url" placeholder="https://example.com" required />
+      <div className="space-y-3">
+        <Label htmlFor="short-url" className="text-base font-medium">
+          URL Tujuan
+        </Label>
+        <Input id="short-url" name="url" type="url" placeholder="https://example.com" required className="text-base" />
       </div>
-      <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? "Creating..." : "Create Short URL"}
+      <Button
+        type="submit"
+        className="w-full h-12 text-base font-medium shadow-lg hover:shadow-xl transition-all"
+        disabled={isLoading}
+      >
+        {isLoading ? "Membuat..." : "Buat Short URL"}
       </Button>
     </form>
   )
