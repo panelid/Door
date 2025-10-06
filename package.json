@@ -62,7 +62,7 @@
     "react-toastify": "latest",
     "recharts": "2.15.4",
     "rxjs": "latest",
-    "sonner": "^1.7.4",
+    "sonner": "latest",
     "subscriptions-transport-ws": "latest",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",

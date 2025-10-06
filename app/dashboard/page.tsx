@@ -3,8 +3,10 @@ import { createClient } from "@/lib/supabase/server"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
-import { Link2, MessageSquare, FileText, Users, ExternalLink } from "lucide-react"
+import { Link2, MessageSquare, FileText, Users, ExternalLink, Mail } from "lucide-react"
 import { DeleteSlugButton } from "@/components/delete-slug-button"
+import { EditSlugDialog } from "@/components/edit-slug-dialog"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -31,39 +33,70 @@ export default async function DashboardPage() {
     redirect("/auth/login")
   }
 
+  const getUserInitials = () => {
+    if (user.email) {
+      return user.email.substring(0, 2).toUpperCase()
+    }
+    return "U"
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
+      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <Link2 className="h-5 w-5" />
             </div>
-            <span className="text-xl font-bold">Door.id</span>
+            <span className="text-lg sm:text-xl font-bold">Door.id</span>
           </div>
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" asChild>
+          <div className="flex items-center gap-2 sm:gap-4">
+            <Button variant="ghost" size="sm" asChild className="hidden sm:flex">
               <Link href="/">Home</Link>
             </Button>
             <form action={handleSignOut}>
-              <Button variant="outline" type="submit">
-                Sign Out
+              <Button variant="outline" size="sm" type="submit">
+                <span className="hidden sm:inline">Sign Out</span>
+                <span className="sm:hidden">Out</span>
               </Button>
             </form>
           </div>
         </div>
       </header>
 
-      <main className="container py-12">
-        <div className="mx-auto max-w-6xl space-y-8">
-          <div className="flex items-center justify-between">
+      <main className="container py-6 sm:py-12 px-4">
+        <div className="mx-auto max-w-6xl space-y-6 sm:space-y-8">
+          <Card className="border-2">
+            <CardContent className="pt-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <Avatar className="h-16 w-16">
+                  <AvatarFallback className="bg-primary text-primary-foreground text-xl">
+                    {getUserInitials()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 space-y-1">
+                  <h2 className="text-xl sm:text-2xl font-bold">Welcome back!</h2>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Mail className="h-4 w-4" />
+                    <span className="break-all">{user.email}</span>
+                  </div>
+                </div>
+                <Button asChild size="sm" className="w-full sm:w-auto">
+                  <Link href="/">Create New Link</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-              <p className="text-muted-foreground">Manage all your Door.id links</p>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">My Links</h1>
+              <p className="text-sm sm:text-base text-muted-foreground">Manage all your Door.id links</p>
             </div>
-            <Button asChild>
-              <Link href="/">Create New Link</Link>
-            </Button>
+            <div className="text-sm text-muted-foreground">
+              Total: <span className="font-semibold">{slugs?.length || 0}</span> link
+              {slugs?.length !== 1 ? "s" : ""}
+            </div>
           </div>
 
           {slugsError && (
@@ -79,7 +112,7 @@ export default async function DashboardPage() {
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <Link2 className="h-12 w-12 text-muted-foreground mb-4" />
                 <h3 className="text-lg font-semibold mb-2">No links yet</h3>
-                <p className="text-sm text-muted-foreground mb-4">Create your first link to get started</p>
+                <p className="text-sm text-muted-foreground mb-4 text-center">Create your first link to get started</p>
                 <Button asChild>
                   <Link href="/">Create Link</Link>
                 </Button>
@@ -88,7 +121,7 @@ export default async function DashboardPage() {
           )}
 
           {slugs && slugs.length > 0 && (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {slugs.map((slug) => (
                 <SlugCard key={slug.id} slug={slug} />
               ))}
@@ -149,27 +182,28 @@ function SlugCard({ slug }: { slug: any }) {
   }
 
   return (
-    <Card>
+    <Card className="hover:shadow-lg transition-shadow">
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2">
             {getIcon()}
-            <div>
-              <CardTitle className="text-lg">{slug.slug}</CardTitle>
+            <div className="min-w-0">
+              <CardTitle className="text-lg truncate">{slug.slug}</CardTitle>
               <CardDescription>{getTypeLabel()}</CardDescription>
             </div>
           </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <p className="text-sm text-muted-foreground break-all">{getDescription()}</p>
+        <p className="text-sm text-muted-foreground break-all line-clamp-2">{getDescription()}</p>
         <div className="flex items-center gap-2">
           <Button asChild variant="outline" size="sm" className="flex-1 bg-transparent">
             <Link href={`/${slug.slug}`} target="_blank">
               <ExternalLink className="h-4 w-4 mr-2" />
-              Visit
+              <span className="hidden sm:inline">Visit</span>
             </Link>
           </Button>
+          <EditSlugDialog slug={slug} />
           <DeleteSlugButton slugId={slug.id} />
         </div>
         <div className="text-xs text-muted-foreground">Created {new Date(slug.created_at).toLocaleDateString()}</div>
