@@ -34,6 +34,13 @@ export default async function SlugPage({ params }: { params: Promise<{ slug: str
 
   console.log("[v0] SlugPage - Processing slug:", slug)
 
+  // Reserved routes that should not be treated as slugs
+  const reservedRoutes = ["dashboard", "auth", "api", "admin", "settings", "_next", "public"]
+  if (reservedRoutes.includes(slug.toLowerCase())) {
+    console.log("[v0] SlugPage - Reserved route detected, calling notFound()")
+    notFound()
+  }
+
   const supabase = await createClient()
 
   const { data: slugData, error } = await supabase.from("slugs").select("*").eq("slug", slug).maybeSingle()
