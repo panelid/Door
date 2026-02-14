@@ -37,8 +37,16 @@ export default async function SlugPage({ params }: { params: Promise<{ slug: str
   // Reserved routes that should not be treated as slugs
   const reservedRoutes = ["dashboard", "auth", "api", "admin", "settings", "_next", "public"]
   if (reservedRoutes.includes(slug.toLowerCase())) {
-    console.log("[v0] SlugPage - Reserved route detected, calling notFound()")
-    notFound()
+    console.log("[v0] SlugPage - Reserved route detected")
+    // Redirect reserved routes to 404 page instead of treating as slugs
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold mb-4">404 - Not Found</h1>
+          <p className="text-muted-foreground">The page you are looking for does not exist.</p>
+        </div>
+      </div>
+    )
   }
 
   const supabase = await createClient()
@@ -48,8 +56,15 @@ export default async function SlugPage({ params }: { params: Promise<{ slug: str
   console.log("[v0] SlugPage - Database query result:", { found: !!slugData, error: error?.message })
 
   if (error || !slugData) {
-    console.log("[v0] SlugPage - Slug not found, calling notFound()")
-    notFound()
+    console.log("[v0] SlugPage - Slug not found")
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold mb-4">404 - Not Found</h1>
+          <p className="text-muted-foreground">The link you are looking for does not exist.</p>
+        </div>
+      </div>
+    )
   }
 
   console.log("[v0] SlugPage - Slug type:", slugData.type)
