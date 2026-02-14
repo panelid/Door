@@ -66,6 +66,15 @@ export default function PastePage({ slug, content, pastePassword }: PastePagePro
     // Set new timeout for auto-save
     autoSaveTimeoutRef.current = setTimeout(async () => {
       try {
+        // Get slug ID first
+        const { data: slugData, error: slugError } = await supabase
+          .from("slugs")
+          .select("id")
+          .eq("slug", slug)
+          .maybeSingle()
+
+        if (slugError || !slugData) throw slugError
+
         // Save to database
         const { error } = await supabase
           .from("slugs")
@@ -77,11 +86,10 @@ export default function PastePage({ slug, content, pastePassword }: PastePagePro
 
         if (error) throw error
 
-        // Save to history
+        // Save to history with slug_id
         await supabase.from("paste_history").insert({
-          slug,
+          slug_id: slugData.id,
           content: editContent,
-          version: Math.floor(Date.now() / 1000),
         })
 
         setCurrentContent(editContent)
@@ -103,10 +111,23 @@ export default function PastePage({ slug, content, pastePassword }: PastePagePro
   // Fetch history
   const fetchHistory = useCallback(async () => {
     try {
+      // First get the slug ID
+      const { data: slugData, error: slugError } = await supabase
+        .from("slugs")
+        .select("id")
+        .eq("slug", slug)
+        .maybeSingle()
+
+      if (slugError || !slugData) {
+        console.error("Error fetching slug:", slugError)
+        return
+      }
+
+      // Then fetch history using slug_id
       const { data, error } = await supabase
         .from("paste_history")
         .select("*")
-        .eq("slug", slug)
+        .eq("slug_id", slugData.id)
         .order("created_at", { ascending: false })
         .limit(10)
 
@@ -126,6 +147,15 @@ export default function PastePage({ slug, content, pastePassword }: PastePagePro
   const handleSave = async () => {
     setIsSaving(true)
     try {
+      // Get slug ID first
+      const { data: slugData, error: slugError } = await supabase
+        .from("slugs")
+        .select("id")
+        .eq("slug", slug)
+        .maybeSingle()
+
+      if (slugError || !slugData) throw slugError
+
       const { error } = await supabase
         .from("slugs")
         .update({
@@ -136,11 +166,10 @@ export default function PastePage({ slug, content, pastePassword }: PastePagePro
 
       if (error) throw error
 
-      // Save to history
+      // Save to history with slug_id
       await supabase.from("paste_history").insert({
-        slug,
+        slug_id: slugData.id,
         content: editContent,
-        version: Math.floor(Date.now() / 1000),
       })
 
       setCurrentContent(editContent)
@@ -160,6 +189,15 @@ export default function PastePage({ slug, content, pastePassword }: PastePagePro
     setShowHistory(false)
 
     try {
+      // Get slug ID first
+      const { data: slugData, error: slugError } = await supabase
+        .from("slugs")
+        .select("id")
+        .eq("slug", slug)
+        .maybeSingle()
+
+      if (slugError || !slugData) throw slugError
+
       const { error } = await supabase
         .from("slugs")
         .update({
@@ -171,9 +209,8 @@ export default function PastePage({ slug, content, pastePassword }: PastePagePro
       if (error) throw error
 
       await supabase.from("paste_history").insert({
-        slug,
+        slug_id: slugData.id,
         content: historyItem.content,
-        version: Math.floor(Date.now() / 1000),
       })
     } catch (err) {
       console.error("Restore error:", err)
