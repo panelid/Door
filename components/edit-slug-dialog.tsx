@@ -38,6 +38,7 @@ export function EditSlugDialog({ slug }: EditSlugDialogProps) {
       case "paste":
         return {
           content: slug.data.content || "",
+          password: slug.paste_password || "",
         }
       case "shorturl":
         return {
@@ -60,12 +61,21 @@ export function EditSlugDialog({ slug }: EditSlugDialogProps) {
     const supabase = createClient()
 
     try {
+      const updateData: any = {
+        updated_at: new Date().toISOString(),
+      }
+
+      if (slug.type === "paste") {
+        const { password, ...dataWithoutPassword } = formData as any
+        updateData.data = dataWithoutPassword
+        updateData.paste_password = password || null
+      } else {
+        updateData.data = formData
+      }
+
       const { error } = await supabase
         .from("slugs")
-        .update({
-          data: formData,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updateData)
         .eq("id", slug.id)
 
       if (error) throw error
@@ -109,16 +119,31 @@ export function EditSlugDialog({ slug }: EditSlugDialogProps) {
         )
       case "paste":
         return (
-          <div className="space-y-2">
-            <Label htmlFor="content">Content</Label>
-            <Textarea
-              id="content"
-              value={formData.content}
-              onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-              placeholder="Your text content here..."
-              rows={8}
-              required
-            />
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="content">Content</Label>
+              <Textarea
+                id="content"
+                value={formData.content}
+                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                placeholder="Your text content here..."
+                rows={8}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Edit Password (Optional)</Label>
+              <Input
+                id="password"
+                type="password"
+                value={formData.password || ""}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                placeholder="Leave empty for public editing"
+              />
+              <p className="text-xs text-muted-foreground">
+                Set a password to require authentication before allowing others to edit this paste
+              </p>
+            </div>
           </div>
         )
       case "shorturl":

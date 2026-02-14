@@ -15,7 +15,13 @@ interface HistoryItem {
   version: number
 }
 
-export default function PastePage({ slug, content }: { slug: string; content: string }) {
+interface PastePageProps {
+  slug: string
+  content: string
+  pastePassword?: string | null
+}
+
+export default function PastePage({ slug, content, pastePassword }: PastePageProps) {
   const [copied, setCopied] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [editContent, setEditContent] = useState(content)
@@ -25,6 +31,9 @@ export default function PastePage({ slug, content }: { slug: string; content: st
   const [currentContent, setCurrentContent] = useState(content)
   const [isOwner, setIsOwner] = useState(false)
   const [autoSaveStatus, setAutoSaveStatus] = useState<"saved" | "saving" | "idle">("idle")
+  const [showPasswordPrompt, setShowPasswordPrompt] = useState(false)
+  const [passwordInput, setPasswordInput] = useState("")
+  const [isPasswordVerified, setIsPasswordVerified] = useState(!pastePassword)
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout>()
 
   const supabase = createClient()
@@ -176,6 +185,28 @@ export default function PastePage({ slug, content }: { slug: string; content: st
     setIsEditing(false)
   }
 
+  const handlePasswordSubmit = () => {
+    if (passwordInput === pastePassword) {
+      setIsPasswordVerified(true)
+      setShowPasswordPrompt(false)
+      setPasswordInput("")
+      setIsEditing(true)
+      fetchHistory()
+    } else {
+      alert("Password salah!")
+      setPasswordInput("")
+    }
+  }
+
+  const handleEditClick = () => {
+    if (pastePassword && !isPasswordVerified) {
+      setShowPasswordPrompt(true)
+    } else {
+      setIsEditing(true)
+      fetchHistory()
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-accent/30">
       <header className="border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40">
@@ -209,17 +240,14 @@ export default function PastePage({ slug, content }: { slug: string; content: st
                   )}
                 </div>
                 <div className="flex gap-2 flex-wrap sm:flex-nowrap">
-                  {isOwner && (
+                  {(isOwner || isPasswordVerified || !pastePassword) && (
                     <>
                       {!isEditing ? (
                         <>
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => {
-                              setIsEditing(true)
-                              fetchHistory()
-                            }}
+                            onClick={handleEditClick}
                             className="gap-2 shadow-sm hover:shadow-md transition-all"
                           >
                             <Edit2 className="h-4 w-4" />
@@ -298,6 +326,53 @@ export default function PastePage({ slug, content }: { slug: string; content: st
               )}
             </CardContent>
           </Card>
+
+          {/* Password Prompt Modal */}
+          {showPasswordPrompt && (
+            <Card className="shadow-2xl border-border/50 backdrop-blur mt-6">
+              <CardHeader>
+                <CardTitle>Masukkan Password</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Paste ini dilindungi dengan password. Masukkan password untuk mengedit.
+                </p>
+                <div className="space-y-2">
+                  <input
+                    type="password"
+                    value={passwordInput}
+                    onChange={(e) => setPasswordInput(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter") {
+                        handlePasswordSubmit()
+                      }
+                    }}
+                    placeholder="Masukkan password..."
+                    className="w-full px-4 py-2 border border-border/50 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                    autoFocus
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handlePasswordSubmit}
+                    className="gap-2"
+                  >
+                    Verifikasi
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowPasswordPrompt(false)
+                      setPasswordInput("")
+                    }}
+                    className="gap-2"
+                  >
+                    Batal
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* History Modal */}
           {showHistory && (
