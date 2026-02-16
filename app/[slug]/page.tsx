@@ -88,7 +88,7 @@ export default async function SlugPage({ params }: { params: Promise<{ slug: str
 
     case "paste":
       console.log("[v0] SlugPage - Rendering paste page")
-      return <PastePage slug={slug} content={slugData.data.content} pastePassword={slugData.paste_password} />
+      return <PastePage slug={slug} content={slugData.data.content} hasPassword={!!slugData.paste_password} />
 
     case "linktree":
       console.log("[v0] SlugPage - Rendering linktree page")

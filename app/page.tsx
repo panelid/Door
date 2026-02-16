@@ -77,11 +77,14 @@ export default function HomePage() {
           break
       }
 
+      const pastePassword = type === "paste" ? (formData.get("paste_password") as string) || null : null
+
       const { error: insertError } = await supabase.from("slugs").insert({
         user_id: user.id,
         slug,
         type,
         data,
+        ...(type === "paste" && pastePassword ? { paste_password: pastePassword } : {}),
       })
 
       if (insertError) throw insertError
@@ -314,6 +317,8 @@ function PasteForm({
   onSubmit: (type: string, formData: FormData) => void
   isLoading: boolean
 }) {
+  const [showPassword, setShowPassword] = useState(false)
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
@@ -343,6 +348,34 @@ function PasteForm({
           required
           className="font-mono text-sm"
         />
+      </div>
+      <div className="space-y-3">
+        <div className="flex items-center gap-3">
+          <input
+            type="checkbox"
+            id="paste-use-password"
+            checked={showPassword}
+            onChange={(e) => setShowPassword(e.target.checked)}
+            className="h-4 w-4 rounded border-border"
+          />
+          <Label htmlFor="paste-use-password" className="text-base font-medium cursor-pointer">
+            Lindungi dengan password untuk edit
+          </Label>
+        </div>
+        {showPassword && (
+          <div className="space-y-2">
+            <Input
+              id="paste-password"
+              name="paste_password"
+              type="password"
+              placeholder="Masukkan password untuk edit..."
+              className="text-base"
+            />
+            <p className="text-xs text-muted-foreground">
+              Pengunjung harus memasukkan password ini untuk bisa mengedit paste. Kosongkan jika ingin siapa saja bisa mengedit.
+            </p>
+          </div>
+        )}
       </div>
       <Button
         type="submit"

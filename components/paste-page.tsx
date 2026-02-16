@@ -4,139 +4,93 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import Link from "next/link"
-import { Link2, Copy, Check, Edit2, Save, RotateCcw, History, X } from "lucide-react"
+import { Link2, Copy, Check, Edit2, Save, RotateCcw, History, X, Lock, Unlock, Eye } from "lucide-react"
 import { useState, useEffect, useCallback, useRef } from "react"
-import { createClient } from "@/lib/supabase/client"
 
 interface HistoryItem {
   id: string
   content: string
   created_at: string
-  version: number
 }
 
 interface PastePageProps {
   slug: string
   content: string
-  pastePassword?: string | null
+  hasPassword: boolean
 }
 
-export default function PastePage({ slug, content, pastePassword }: PastePageProps) {
+export default function PastePage({ slug, content, hasPassword }: PastePageProps) {
   const [copied, setCopied] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [editContent, setEditContent] = useState(content)
-  const [isSaving, setIsSaving] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
   const [history, setHistory] = useState<HistoryItem[]>([])
   const [currentContent, setCurrentContent] = useState(content)
-  const [isOwner, setIsOwner] = useState(false)
-  const [autoSaveStatus, setAutoSaveStatus] = useState<"saved" | "saving" | "idle">("idle")
+  const [autoSaveStatus, setAutoSaveStatus] = useState<"saved" | "saving" | "error" | "idle">("idle")
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false)
   const [passwordInput, setPasswordInput] = useState("")
-  const [isPasswordVerified, setIsPasswordVerified] = useState(!pastePassword)
+  const [passwordError, setPasswordError] = useState("")
+  const [isPasswordVerified, setIsPasswordVerified] = useState(false)
+  const [isVerifying, setIsVerifying] = useState(false)
+  const [selectedHistory, setSelectedHistory] = useState<HistoryItem | null>(null)
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout>()
+  const verifiedPasswordRef = useRef<string>("")
 
-  const supabase = createClient()
-
-  // Check if user is owner (has edit token in URL or local storage)
-  useEffect(() => {
-    const token = new URLSearchParams(window.location.search).get("edit")
-    if (token) {
-      localStorage.setItem(`edit_${slug}`, token)
-      setIsOwner(true)
-    } else {
-      const savedToken = localStorage.getItem(`edit_${slug}`)
-      if (savedToken) {
-        setIsOwner(true)
-      }
-    }
-  }, [slug])
-
-  // Auto-save functionality
+  // Auto-save functionality via API
   useEffect(() => {
     if (!isEditing || editContent === currentContent) return
 
     setAutoSaveStatus("saving")
 
-    // Clear previous timeout
     if (autoSaveTimeoutRef.current) {
       clearTimeout(autoSaveTimeoutRef.current)
     }
 
-    // Set new timeout for auto-save
     autoSaveTimeoutRef.current = setTimeout(async () => {
       try {
-        // Get slug ID first
-        const { data: slugData, error: slugError } = await supabase
-          .from("slugs")
-          .select("id")
-          .eq("slug", slug)
-          .maybeSingle()
-
-        if (slugError || !slugData) throw slugError
-
-        // Save to database
-        const { error } = await supabase
-          .from("slugs")
-          .update({
-            data: { content: editContent },
-            updated_at: new Date().toISOString(),
-          })
-          .eq("slug", slug)
-
-        if (error) throw error
-
-        // Save to history with slug_id
-        await supabase.from("paste_history").insert({
-          slug_id: slugData.id,
-          content: editContent,
+        const res = await fetch("/api/paste/update", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            slug,
+            content: editContent,
+            password: verifiedPasswordRef.current || undefined,
+          }),
         })
+
+        if (!res.ok) {
+          const data = await res.json()
+          throw new Error(data.error || "Failed to save")
+        }
 
         setCurrentContent(editContent)
         setAutoSaveStatus("saved")
         setTimeout(() => setAutoSaveStatus("idle"), 2000)
       } catch (err) {
         console.error("Auto-save error:", err)
-        setAutoSaveStatus("idle")
+        setAutoSaveStatus("error")
+        setTimeout(() => setAutoSaveStatus("idle"), 3000)
       }
-    }, 1500) // Save after 1.5 seconds of inactivity
+    }, 1500)
 
     return () => {
       if (autoSaveTimeoutRef.current) {
         clearTimeout(autoSaveTimeoutRef.current)
       }
     }
-  }, [editContent, isEditing, currentContent, slug, supabase])
+  }, [editContent, isEditing, currentContent, slug])
 
-  // Fetch history
+  // Fetch history via API
   const fetchHistory = useCallback(async () => {
     try {
-      // First get the slug ID
-      const { data: slugData, error: slugError } = await supabase
-        .from("slugs")
-        .select("id")
-        .eq("slug", slug)
-        .maybeSingle()
-
-      if (slugError || !slugData) {
-        console.error("Error fetching slug:", slugError)
-        return
-      }
-
-      // Then fetch history using slug_id
-      const { data, error } = await supabase
-        .from("paste_history")
-        .select("*")
-        .eq("slug_id", slugData.id)
-        .order("created_at", { ascending: false })
-        .limit(10)
-
-      if (error) throw error
-      setHistory(data || [])
+      const res = await fetch(`/api/paste/history?slug=${encodeURIComponent(slug)}`)
+      if (!res.ok) throw new Error("Failed to fetch history")
+      const data = await res.json()
+      setHistory(data.history || [])
     } catch (err) {
       console.error("Error fetching history:", err)
     }
-  }, [slug, supabase])
+  }, [slug])
 
   const handleCopy = () => {
     navigator.clipboard.writeText(currentContent)
@@ -145,32 +99,22 @@ export default function PastePage({ slug, content, pastePassword }: PastePagePro
   }
 
   const handleSave = async () => {
-    setIsSaving(true)
     try {
-      // Get slug ID first
-      const { data: slugData, error: slugError } = await supabase
-        .from("slugs")
-        .select("id")
-        .eq("slug", slug)
-        .maybeSingle()
-
-      if (slugError || !slugData) throw slugError
-
-      const { error } = await supabase
-        .from("slugs")
-        .update({
-          data: { content: editContent },
-          updated_at: new Date().toISOString(),
-        })
-        .eq("slug", slug)
-
-      if (error) throw error
-
-      // Save to history with slug_id
-      await supabase.from("paste_history").insert({
-        slug_id: slugData.id,
-        content: editContent,
+      setAutoSaveStatus("saving")
+      const res = await fetch("/api/paste/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          slug,
+          content: editContent,
+          password: verifiedPasswordRef.current || undefined,
+        }),
       })
+
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || "Failed to save")
+      }
 
       setCurrentContent(editContent)
       setIsEditing(false)
@@ -178,40 +122,32 @@ export default function PastePage({ slug, content, pastePassword }: PastePagePro
       setTimeout(() => setAutoSaveStatus("idle"), 2000)
     } catch (err) {
       console.error("Save error:", err)
-    } finally {
-      setIsSaving(false)
+      setAutoSaveStatus("error")
     }
   }
 
   const handleRestore = async (historyItem: HistoryItem) => {
-    setEditContent(historyItem.content)
-    setCurrentContent(historyItem.content)
-    setShowHistory(false)
-
     try {
-      // Get slug ID first
-      const { data: slugData, error: slugError } = await supabase
-        .from("slugs")
-        .select("id")
-        .eq("slug", slug)
-        .maybeSingle()
-
-      if (slugError || !slugData) throw slugError
-
-      const { error } = await supabase
-        .from("slugs")
-        .update({
-          data: { content: historyItem.content },
-          updated_at: new Date().toISOString(),
-        })
-        .eq("slug", slug)
-
-      if (error) throw error
-
-      await supabase.from("paste_history").insert({
-        slug_id: slugData.id,
-        content: historyItem.content,
+      const res = await fetch("/api/paste/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          slug,
+          content: historyItem.content,
+          password: verifiedPasswordRef.current || undefined,
+        }),
       })
+
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || "Failed to restore")
+      }
+
+      setEditContent(historyItem.content)
+      setCurrentContent(historyItem.content)
+      setShowHistory(false)
+      setSelectedHistory(null)
+      fetchHistory()
     } catch (err) {
       console.error("Restore error:", err)
     }
@@ -220,27 +156,54 @@ export default function PastePage({ slug, content, pastePassword }: PastePagePro
   const handleCancel = () => {
     setEditContent(currentContent)
     setIsEditing(false)
+    setAutoSaveStatus("idle")
   }
 
-  const handlePasswordSubmit = () => {
-    if (passwordInput === pastePassword) {
-      setIsPasswordVerified(true)
-      setShowPasswordPrompt(false)
-      setPasswordInput("")
-      setIsEditing(true)
-      fetchHistory()
-    } else {
-      alert("Password salah!")
-      setPasswordInput("")
+  const handlePasswordSubmit = async () => {
+    setIsVerifying(true)
+    setPasswordError("")
+
+    try {
+      const res = await fetch("/api/paste/verify-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug, password: passwordInput }),
+      })
+
+      const data = await res.json()
+
+      if (res.ok && data.success) {
+        setIsPasswordVerified(true)
+        verifiedPasswordRef.current = passwordInput
+        setShowPasswordPrompt(false)
+        setPasswordInput("")
+        setIsEditing(true)
+        fetchHistory()
+      } else {
+        setPasswordError(data.error || "Password salah!")
+      }
+    } catch (err) {
+      setPasswordError("Terjadi kesalahan. Coba lagi.")
+    } finally {
+      setIsVerifying(false)
     }
   }
 
   const handleEditClick = () => {
-    if (pastePassword && !isPasswordVerified) {
+    if (hasPassword && !isPasswordVerified) {
       setShowPasswordPrompt(true)
     } else {
       setIsEditing(true)
       fetchHistory()
+    }
+  }
+
+  const handleHistoryClick = () => {
+    if (hasPassword && !isPasswordVerified) {
+      setShowPasswordPrompt(true)
+    } else {
+      setShowHistory(!showHistory)
+      if (!showHistory) fetchHistory()
     }
   }
 
@@ -268,44 +231,47 @@ export default function PastePage({ slug, content, pastePassword }: PastePagePro
             <CardHeader>
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                  <CardTitle className="text-2xl sm:text-3xl font-bold">door.id/{slug}</CardTitle>
+                  <div className="flex items-center gap-2">
+                    <CardTitle className="text-2xl sm:text-3xl font-bold">door.id/{slug}</CardTitle>
+                    {hasPassword ? (
+                      <Lock className="h-4 w-4 text-muted-foreground" title="Dilindungi password" />
+                    ) : (
+                      <Unlock className="h-4 w-4 text-muted-foreground" title="Edit bebas" />
+                    )}
+                  </div>
                   {autoSaveStatus === "saving" && (
-                    <p className="text-sm text-muted-foreground mt-1">Menyimpan otomatis...</p>
+                    <p className="text-sm text-muted-foreground mt-1 animate-pulse">⏳ Menyimpan otomatis...</p>
                   )}
                   {autoSaveStatus === "saved" && (
                     <p className="text-sm text-green-600 dark:text-green-400 mt-1">✓ Tersimpan</p>
                   )}
+                  {autoSaveStatus === "error" && (
+                    <p className="text-sm text-red-600 dark:text-red-400 mt-1">✗ Gagal menyimpan</p>
+                  )}
                 </div>
                 <div className="flex gap-2 flex-wrap sm:flex-nowrap">
-                  {(isOwner || isPasswordVerified || !pastePassword) && (
+                  {!isEditing ? (
                     <>
-                      {!isEditing ? (
-                        <>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={handleEditClick}
-                            className="gap-2 shadow-sm hover:shadow-md transition-all"
-                          >
-                            <Edit2 className="h-4 w-4" />
-                            Edit
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setShowHistory(!showHistory)
-                              if (!showHistory) fetchHistory()
-                            }}
-                            className="gap-2 shadow-sm hover:shadow-md transition-all"
-                          >
-                            <History className="h-4 w-4" />
-                            Riwayat
-                          </Button>
-                        </>
-                      ) : null}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleEditClick}
+                        className="gap-2 shadow-sm hover:shadow-md transition-all"
+                      >
+                        <Edit2 className="h-4 w-4" />
+                        Edit
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleHistoryClick}
+                        className="gap-2 shadow-sm hover:shadow-md transition-all"
+                      >
+                        <History className="h-4 w-4" />
+                        Riwayat
+                      </Button>
                     </>
-                  )}
+                  ) : null}
                   <Button
                     variant="outline"
                     size="sm"
@@ -336,28 +302,32 @@ export default function PastePage({ slug, content, pastePassword }: PastePagePro
                     onChange={(e) => setEditContent(e.target.value)}
                     placeholder="Masukkan konten di sini..."
                     className="min-h-96 font-mono text-sm p-4 resize-vertical"
+                    autoFocus
                   />
                   <div className="flex gap-2 flex-wrap">
-                    <Button
-                      onClick={handleSave}
-                      disabled={isSaving}
-                      className="gap-2"
-                    >
+                    <Button onClick={handleSave} className="gap-2">
                       <Save className="h-4 w-4" />
-                      {isSaving ? "Menyimpan..." : "Simpan"}
+                      Simpan & Tutup
+                    </Button>
+                    <Button variant="outline" onClick={handleCancel} className="gap-2">
+                      <X className="h-4 w-4" />
+                      Batal
                     </Button>
                     <Button
                       variant="outline"
-                      onClick={handleCancel}
+                      onClick={() => {
+                        setShowHistory(!showHistory)
+                        if (!showHistory) fetchHistory()
+                      }}
                       className="gap-2"
                     >
-                      <X className="h-4 w-4" />
-                      Batal
+                      <History className="h-4 w-4" />
+                      Riwayat
                     </Button>
                   </div>
                 </div>
               ) : (
-                <pre className="whitespace-pre-wrap break-words font-mono text-sm bg-muted/50 p-6 rounded-xl border border-border/50 leading-relaxed max-h-96 overflow-auto">
+                <pre className="whitespace-pre-wrap break-words font-mono text-sm bg-muted/50 p-6 rounded-xl border border-border/50 leading-relaxed max-h-[600px] overflow-auto">
                   {currentContent}
                 </pre>
               )}
@@ -366,76 +336,92 @@ export default function PastePage({ slug, content, pastePassword }: PastePagePro
 
           {/* Password Prompt Modal */}
           {showPasswordPrompt && (
-            <Card className="shadow-2xl border-border/50 backdrop-blur mt-6">
-              <CardHeader>
-                <CardTitle>Masukkan Password</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  Paste ini dilindungi dengan password. Masukkan password untuk mengedit.
-                </p>
-                <div className="space-y-2">
-                  <input
-                    type="password"
-                    value={passwordInput}
-                    onChange={(e) => setPasswordInput(e.target.value)}
-                    onKeyPress={(e) => {
-                      if (e.key === "Enter") {
-                        handlePasswordSubmit()
-                      }
-                    }}
-                    placeholder="Masukkan password..."
-                    className="w-full px-4 py-2 border border-border/50 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
-                    autoFocus
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    onClick={handlePasswordSubmit}
-                    className="gap-2"
-                  >
-                    Verifikasi
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setShowPasswordPrompt(false)
-                      setPasswordInput("")
-                    }}
-                    className="gap-2"
-                  >
-                    Batal
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+              <Card className="shadow-2xl border-border/50 w-full max-w-md">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Lock className="h-5 w-5" />
+                    Masukkan Password
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-muted-foreground">
+                    Paste ini dilindungi password. Masukkan password untuk mengedit.
+                  </p>
+                  <div className="space-y-2">
+                    <input
+                      type="password"
+                      value={passwordInput}
+                      onChange={(e) => {
+                        setPasswordInput(e.target.value)
+                        setPasswordError("")
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handlePasswordSubmit()
+                      }}
+                      placeholder="Masukkan password..."
+                      className="w-full px-4 py-2 border border-border/50 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                      autoFocus
+                    />
+                    {passwordError && (
+                      <p className="text-sm text-red-500">{passwordError}</p>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button onClick={handlePasswordSubmit} disabled={isVerifying} className="gap-2">
+                      {isVerifying ? "Memverifikasi..." : "Verifikasi"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setShowPasswordPrompt(false)
+                        setPasswordInput("")
+                        setPasswordError("")
+                      }}
+                    >
+                      Batal
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           )}
 
-          {/* History Modal */}
+          {/* History Panel */}
           {showHistory && (
             <Card className="shadow-2xl border-border/50 backdrop-blur mt-6">
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle>Riwayat Edit</CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                    <History className="h-5 w-5" />
+                    Riwayat Edit
+                  </CardTitle>
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setShowHistory(false)}
-                    className="gap-2"
+                    onClick={() => {
+                      setShowHistory(false)
+                      setSelectedHistory(null)
+                    }}
                   >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3 max-h-96 overflow-y-auto">
+                <div className="space-y-3 max-h-[500px] overflow-y-auto">
                   {history.length === 0 ? (
-                    <p className="text-muted-foreground text-center py-8">Belum ada riwayat</p>
+                    <p className="text-muted-foreground text-center py-8">Belum ada riwayat perubahan</p>
                   ) : (
                     history.map((item, idx) => (
                       <div
                         key={item.id}
-                        className="p-4 border border-border/50 rounded-lg hover:bg-muted/50 transition-colors"
+                        className={`p-4 border rounded-lg transition-colors cursor-pointer ${
+                          selectedHistory?.id === item.id
+                            ? "border-primary bg-primary/5"
+                            : "border-border/50 hover:bg-muted/50"
+                        }`}
+                        onClick={() => setSelectedHistory(selectedHistory?.id === item.id ? null : item)}
                       >
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1 min-w-0">
@@ -443,22 +429,48 @@ export default function PastePage({ slug, content, pastePassword }: PastePagePro
                               Versi {history.length - idx}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              {new Date(item.created_at).toLocaleString("id-ID")}
+                              {new Date(item.created_at).toLocaleString("id-ID", {
+                                dateStyle: "medium",
+                                timeStyle: "short",
+                              })}
                             </p>
-                            <p className="text-sm mt-2 text-muted-foreground line-clamp-2 font-mono">
-                              {item.content.substring(0, 100)}
-                              {item.content.length > 100 ? "..." : ""}
-                            </p>
+                            {selectedHistory?.id === item.id ? (
+                              <pre className="text-sm mt-3 text-muted-foreground font-mono whitespace-pre-wrap break-words bg-muted/50 p-3 rounded-lg max-h-48 overflow-auto">
+                                {item.content}
+                              </pre>
+                            ) : (
+                              <p className="text-sm mt-2 text-muted-foreground line-clamp-2 font-mono">
+                                {item.content.substring(0, 120)}
+                                {item.content.length > 120 ? "..." : ""}
+                              </p>
+                            )}
                           </div>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleRestore(item)}
-                            className="gap-2 whitespace-nowrap"
-                          >
-                            <RotateCcw className="h-4 w-4" />
-                            Kembalikan
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setSelectedHistory(selectedHistory?.id === item.id ? null : item)
+                              }}
+                              className="gap-1 whitespace-nowrap"
+                            >
+                              <Eye className="h-3 w-3" />
+                              Lihat
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleRestore(item)
+                              }}
+                              className="gap-1 whitespace-nowrap"
+                            >
+                              <RotateCcw className="h-3 w-3" />
+                              Kembalikan
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     ))
