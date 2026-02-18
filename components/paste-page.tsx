@@ -4,8 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import Link from "next/link"
-import { Link2, Copy, Check, Edit2, Save, RotateCcw, History, X, Lock, Unlock, Eye } from "lucide-react"
+import { Link2, Copy, Check, Edit2, Save, RotateCcw, History, X, Lock, Unlock, Eye, Shield, ShieldOff } from "lucide-react"
 import { useState, useEffect, useCallback, useRef } from "react"
+import PasswordPromptModal from "./password-prompt-modal"
 
 interface HistoryItem {
   id: string
@@ -33,6 +34,9 @@ export default function PastePage({ slug, content, hasPassword }: PastePageProps
   const [isPasswordVerified, setIsPasswordVerified] = useState(false)
   const [isVerifying, setIsVerifying] = useState(false)
   const [selectedHistory, setSelectedHistory] = useState<HistoryItem | null>(null)
+  const [showPasswordModal, setShowPasswordModal] = useState(false)
+  const [modalMode, setModalMode] = useState<"verify" | "add">("verify")
+  const [isAddingPassword, setIsAddingPassword] = useState(false)
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout>()
   const verifiedPasswordRef = useRef<string>("")
 
@@ -191,7 +195,8 @@ export default function PastePage({ slug, content, hasPassword }: PastePageProps
 
   const handleEditClick = () => {
     if (hasPassword && !isPasswordVerified) {
-      setShowPasswordPrompt(true)
+      setModalMode("verify")
+      setShowPasswordModal(true)
     } else {
       setIsEditing(true)
       fetchHistory()
@@ -200,10 +205,82 @@ export default function PastePage({ slug, content, hasPassword }: PastePageProps
 
   const handleHistoryClick = () => {
     if (hasPassword && !isPasswordVerified) {
-      setShowPasswordPrompt(true)
+      setModalMode("verify")
+      setShowPasswordModal(true)
     } else {
       setShowHistory(!showHistory)
       if (!showHistory) fetchHistory()
+    }
+  }
+
+  const handleAddPasswordClick = () => {
+    setModalMode("add")
+    setShowPasswordModal(true)
+  }
+
+  const handlePasswordVerify = async (password: string) => {
+    if (modalMode === "verify") {
+      // Verify existing password
+      const res = await fetch("/api/paste/verify-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug, password }),
+      })
+
+      const data = await res.json()
+
+      if (res.ok && data.success) {
+        verifiedPasswordRef.current = password
+        setIsPasswordVerified(true)
+        setShowPasswordModal(false)
+        setIsEditing(true)
+        fetchHistory()
+      } else {
+        throw new Error(data.error || "Password salah!")
+      }
+    } else {
+      // Add new password to existing paste
+      setIsAddingPassword(true)
+      
+      try {
+        // First verify we can edit (no password currently)
+        const verifyRes = await fetch("/api/paste/verify-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ slug, password: "" }),
+        })
+
+        const verifyData = await verifyRes.json()
+
+        if (verifyRes.ok && verifyData.success) {
+          // Update paste with new password
+          const updateRes = await fetch("/api/paste/update", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              slug,
+              content: currentContent,
+              password: password, // New password
+            }),
+          })
+
+          if (updateRes.ok) {
+            verifiedPasswordRef.current = password
+            setIsPasswordVerified(true)
+            setShowPasswordModal(false)
+            alert("✅ Password berhasil ditambahkan ke paste ini!")
+          } else {
+            const updateData = await updateRes.json()
+            throw new Error(updateData.error || "Gagal menambahkan password")
+          }
+        } else {
+          throw new Error("Paste sudah dilindungi password. Gunakan mode verifikasi.")
+        }
+      } catch (err: any) {
+        throw new Error(err.message || "Gagal menambahkan password")
+      } finally {
+        setIsAddingPassword(false)
+      }
     }
   }
 
@@ -257,6 +334,7 @@ export default function PastePage({ slug, content, hasPassword }: PastePageProps
                         size="sm"
                         onClick={handleEditClick}
                         className="gap-2 shadow-sm hover:shadow-md transition-all"
+                        title={hasPassword ? "Edit (perlu password)" : "Edit paste"}
                       >
                         <Edit2 className="h-4 w-4" />
                         Edit
@@ -266,10 +344,23 @@ export default function PastePage({ slug, content, hasPassword }: PastePageProps
                         size="sm"
                         onClick={handleHistoryClick}
                         className="gap-2 shadow-sm hover:shadow-md transition-all"
+                        title="Lihat riwayat edit"
                       >
                         <History className="h-4 w-4" />
                         Riwayat
                       </Button>
+                      {!hasPassword && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleAddPasswordClick}
+                          className="gap-2 shadow-sm hover:shadow-md transition-all"
+                          title="Tambahkan password untuk melindungi paste ini"
+                        >
+                          <Shield className="h-4 w-4" />
+                          Add Password
+                        </Button>
+                      )}
                     </>
                   ) : null}
                   <Button
@@ -277,6 +368,7 @@ export default function PastePage({ slug, content, hasPassword }: PastePageProps
                     size="sm"
                     onClick={handleCopy}
                     className="gap-2 shadow-sm hover:shadow-md transition-all"
+                    title="Salin konten ke clipboard"
                   >
                     {copied ? (
                       <>
@@ -335,57 +427,18 @@ export default function PastePage({ slug, content, hasPassword }: PastePageProps
           </Card>
 
           {/* Password Prompt Modal */}
-          {showPasswordPrompt && (
-            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-              <Card className="shadow-2xl border-border/50 w-full max-w-md">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Lock className="h-5 w-5" />
-                    Masukkan Password
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    Paste ini dilindungi password. Masukkan password untuk mengedit.
-                  </p>
-                  <div className="space-y-2">
-                    <input
-                      type="password"
-                      value={passwordInput}
-                      onChange={(e) => {
-                        setPasswordInput(e.target.value)
-                        setPasswordError("")
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") handlePasswordSubmit()
-                      }}
-                      placeholder="Masukkan password..."
-                      className="w-full px-4 py-2 border border-border/50 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
-                      autoFocus
-                    />
-                    {passwordError && (
-                      <p className="text-sm text-red-500">{passwordError}</p>
-                    )}
-                  </div>
-                  <div className="flex gap-2">
-                    <Button onClick={handlePasswordSubmit} disabled={isVerifying} className="gap-2">
-                      {isVerifying ? "Memverifikasi..." : "Verifikasi"}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setShowPasswordPrompt(false)
-                        setPasswordInput("")
-                        setPasswordError("")
-                      }}
-                    >
-                      Batal
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
+          <PasswordPromptModal
+            slug={slug}
+            isOpen={showPasswordModal}
+            onClose={() => setShowPasswordModal(false)}
+            onVerify={handlePasswordVerify}
+            title={modalMode === "verify" ? "Masukkan Password" : "🔒 Tambah Password"}
+            description={
+              modalMode === "verify" 
+                ? "Paste ini dilindungi password. Masukkan password untuk mengedit."
+                : "Tambahkan password untuk melindungi paste ini dari edit oleh orang lain."
+            }
+          />
 
           {/* History Panel */}
           {showHistory && (

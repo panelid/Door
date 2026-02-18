@@ -350,29 +350,92 @@ function PasteForm({
         />
       </div>
       <div className="space-y-3">
-        <div className="flex items-center gap-3">
-          <input
-            type="checkbox"
-            id="paste-use-password"
-            checked={showPassword}
-            onChange={(e) => setShowPassword(e.target.checked)}
-            className="h-4 w-4 rounded border-border"
-          />
-          <Label htmlFor="paste-use-password" className="text-base font-medium cursor-pointer">
-            Lindungi dengan password untuk edit
-          </Label>
+        <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
+          <div className="flex items-center gap-3">
+            <div className={`p-1.5 rounded-full ${showPassword ? 'bg-green-100' : 'bg-gray-200'}`}>
+              {showPassword ? (
+                <div className="h-5 w-5 flex items-center justify-center text-green-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                </div>
+              ) : (
+                <div className="h-5 w-5 flex items-center justify-center text-gray-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M15 7h1a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-2"></path>
+                    <path d="M6 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h1"></path>
+                    <path d="m8 7 3-3 3 3"></path>
+                    <path d="m8 21 3-3 3 3"></path>
+                  </svg>
+                </div>
+              )}
+            </div>
+            <div>
+              <Label htmlFor="paste-use-password" className="text-base font-medium cursor-pointer">
+                {showPassword ? '🔒 Dilindungi Password' : '🔓 Bebas Edit'}
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                {showPassword ? 'Hanya yang tahu password bisa edit' : 'Siapa saja bisa edit paste ini'}
+              </p>
+            </div>
+          </div>
+          <label className="flex items-center cursor-pointer">
+            <div className="relative">
+              <input
+                type="checkbox"
+                className="sr-only"
+                id="paste-use-password"
+                checked={showPassword}
+                onChange={(e) => setShowPassword(e.target.checked)}
+              />
+              <div className={`block w-12 h-6 rounded-full transition-colors ${
+                showPassword ? 'bg-green-500' : 'bg-gray-300'
+              }`}></div>
+              <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${
+                showPassword ? 'transform translate-x-6' : ''
+              }`}></div>
+            </div>
+          </label>
         </div>
+        
         {showPassword && (
-          <div className="space-y-2">
-            <Input
-              id="paste-password"
-              name="paste_password"
-              type="password"
-              placeholder="Masukkan password untuk edit..."
-              className="text-base"
-            />
-            <p className="text-xs text-muted-foreground">
-              Pengunjung harus memasukkan password ini untuk bisa mengedit paste. Kosongkan jika ingin siapa saja bisa mengedit.
+          <div className="space-y-3 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div>
+              <Label htmlFor="paste-password" className="text-sm font-medium text-gray-700 mb-1">
+                Password Edit
+              </Label>
+              <Input
+                id="paste-password"
+                name="paste_password"
+                type="password"
+                placeholder="Masukkan password untuk edit..."
+                className="text-base border-green-300 focus:border-green-500 focus:ring-green-500"
+                minLength={4}
+              />
+            </div>
+            <div>
+              <Label htmlFor="paste-confirm-password" className="text-sm font-medium text-gray-700 mb-1">
+                Konfirmasi Password
+              </Label>
+              <Input
+                id="paste-confirm-password"
+                type="password"
+                placeholder="Konfirmasi password..."
+                className="text-base border-green-300 focus:border-green-500 focus:ring-green-500"
+                onChange={(e) => {
+                  const passwordInput = document.getElementById('paste-password') as HTMLInputElement;
+                  if (e.target.value !== passwordInput.value) {
+                    e.target.classList.add('border-red-500');
+                  } else {
+                    e.target.classList.remove('border-red-500');
+                  }
+                }}
+              />
+            </div>
+            <p className="text-xs text-green-700">
+              🔐 Hanya orang yang tahu password ini yang bisa mengedit atau menghapus paste ini.
+              Kosongkan jika ingin siapa saja bisa mengedit.
             </p>
           </div>
         )}
