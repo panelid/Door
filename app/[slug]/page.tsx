@@ -86,9 +86,22 @@ export default async function SlugPage({ params }: { params: Promise<{ slug: str
       break
     }
 
-    case "paste":
+    case "paste": {
       console.log("[v0] SlugPage - Rendering paste page")
-      return <PastePage slug={slug} content={slugData.data.content} hasPassword={!!slugData.paste_password} />
+      
+      // Get current user to check ownership
+      const { data: { user } } = await supabase.auth.getUser()
+      const isOwner = user && slugData.user_id && user.id === slugData.user_id
+      
+      return (
+        <PastePage 
+          slug={slug} 
+          content={slugData.data.content} 
+          hasPassword={!!slugData.paste_password}
+          isOwner={isOwner}
+        />
+      )
+    }
 
     case "linktree":
       console.log("[v0] SlugPage - Rendering linktree page")
