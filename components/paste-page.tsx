@@ -18,9 +18,10 @@ interface PastePageProps {
   slug: string
   content: string
   hasPassword: boolean
+  isOwner?: boolean  // Tambah prop untuk cek ownership
 }
 
-export default function PastePage({ slug, content, hasPassword }: PastePageProps) {
+export default function PastePage({ slug, content, hasPassword, isOwner = false }: PastePageProps) {
   const [copied, setCopied] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [editContent, setEditContent] = useState(content)
@@ -349,18 +350,7 @@ export default function PastePage({ slug, content, hasPassword }: PastePageProps
                         <History className="h-4 w-4" />
                         Riwayat
                       </Button>
-                      {!hasPassword && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={handleAddPasswordClick}
-                          className="gap-2 shadow-sm hover:shadow-md transition-all"
-                          title="Tambahkan password untuk melindungi paste ini"
-                        >
-                          <Shield className="h-4 w-4" />
-                          Add Password
-                        </Button>
-                      )}
+                      {/* Set Password button REMOVED - Only available in dashboard during creation */}
                     </>
                   ) : null}
                   <Button
