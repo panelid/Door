@@ -82,7 +82,7 @@ export default function PastePage({ slug, content, hasPassword, type = "paste" }
 
   const fetchHistory = async () => {
     try {
-      const res = await fetch(`/api/paste/history/${slug}`)
+      const res = await fetch(`/api/paste/history?slug=${slug}`)
       if (!res.ok) throw new Error("Failed to fetch history")
       const data = await res.json()
       setHistory(data.history || [])
