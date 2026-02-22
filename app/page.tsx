@@ -122,23 +122,51 @@ export default function HomePage() {
 
       <main className="container py-16 md:py-24">
         <div className="mx-auto max-w-6xl space-y-16">
-          <div className="text-center space-y-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-sm font-medium text-primary mb-4">
-              <Sparkles className="h-4 w-4" />
-              Platform Link Management Terbaik di Indonesia
+          <div className="text-center space-y-10 relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-accent/30 rounded-3xl -z-10 blur-3xl opacity-50" />
+            
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/30 text-sm font-semibold text-primary mb-6 shadow-lg">
+              <Sparkles className="h-4 w-4 animate-pulse" />
+              Platform All-in-One Link Pintar Indonesia
             </div>
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-balance leading-tight">
-              Satu Link,{" "}
-              <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
-                Kemungkinan Tak Terbatas
+            
+            <h1 className="text-5xl md:text-8xl font-black tracking-tight text-balance leading-tight">
+              <span className="bg-gradient-to-r from-primary via-primary/90 to-accent bg-clip-text text-transparent animate-gradient">
+                Door.id
               </span>
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed text-pretty">
-              Buat link WhatsApp custom, bagikan teks, bangun link-in-bio Anda, atau perpendek URL apapun. Semua dalam
-              satu platform yang powerful dan mudah digunakan.
+            
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-balance leading-tight">
+              Satu Link,{" "}
+              <span className="bg-gradient-to-r from-accent via-accent/80 to-accent/60 bg-clip-text text-transparent">
+                Segala Kebutuhan
+              </span>
+            </h2>
+            
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed text-pretty bg-gradient-to-br from-foreground/80 to-foreground/60 bg-clip-text text-transparent">
+              Platform <strong>all-in-one</strong> untuk link pintar: WhatsApp, teks rahasia, linktree, dan short URL.
+              Semua dalam satu tempat yang powerful dan mudah digunakan.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto pt-8">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+              <Button 
+                size="lg" 
+                className="px-8 py-6 text-lg font-semibold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-xl hover:shadow-2xl transition-all hover:scale-105"
+                onClick={() => document.getElementById('create-link-section')?.scrollIntoView({ behavior: 'smooth' })}
+              >
+                🚀 Buat Link Pertama Anda
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="px-8 py-6 text-lg font-semibold border-2 hover:bg-accent/10 hover:border-accent shadow-lg hover:shadow-xl transition-all"
+                onClick={() => window.open('https://github.com/panelid/Door', '_blank')}
+              >
+                ⭐ Lihat di GitHub
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto pt-8" id="create-link-section">
               <div className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-card/50 backdrop-blur border border-border/50 hover:border-primary/50 transition-all hover:shadow-lg">
                 <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
                   <Zap className="h-6 w-6 text-primary" />
@@ -163,7 +191,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <Card className="shadow-2xl border-border/50 backdrop-blur">
+          <Card className="shadow-2xl border-border/50 backdrop-blur" id="create-link-section">
             <CardHeader className="space-y-3">
               <CardTitle className="text-3xl">Buat Link Anda</CardTitle>
               <CardDescription className="text-base">
