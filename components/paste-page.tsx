@@ -34,6 +34,7 @@ export default function PastePage({ slug, content, hasPassword, type = "paste" }
   const [isVerifying, setIsVerifying] = useState(false)
   const [selectedHistory, setSelectedHistory] = useState<HistoryItem | null>(null)
   const [showPasswordModal, setShowPasswordModal] = useState(false)
+  const [requestedAction, setRequestedAction] = useState<"edit" | "history">("edit")
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout>()
   const verifiedPasswordRef = useRef<string>("")
 
@@ -93,6 +94,7 @@ export default function PastePage({ slug, content, hasPassword, type = "paste" }
 
   const handleEditClick = () => {
     if (hasPassword && !isPasswordVerified) {
+      setRequestedAction("edit")
       setShowPasswordModal(true)
     } else {
       setIsEditing(true)
@@ -102,6 +104,7 @@ export default function PastePage({ slug, content, hasPassword, type = "paste" }
 
   const handleHistoryClick = () => {
     if (hasPassword && !isPasswordVerified) {
+      setRequestedAction("history")
       setShowPasswordModal(true)
     } else {
       setShowHistory(!showHistory)
@@ -131,8 +134,15 @@ export default function PastePage({ slug, content, hasPassword, type = "paste" }
         setIsPasswordVerified(true)
         verifiedPasswordRef.current = password
         setShowPasswordModal(false)
-        setIsEditing(true)
-        fetchHistory()
+        
+        // Execute the requested action
+        if (requestedAction === "edit") {
+          setIsEditing(true)
+          fetchHistory()
+        } else if (requestedAction === "history") {
+          setShowHistory(true)
+          fetchHistory()
+        }
       } else {
         setPasswordError("Password salah. Coba lagi.")
       }
