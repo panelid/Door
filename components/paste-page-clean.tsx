@@ -4,8 +4,11 @@ import { useEffect, useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { Shield, History, Edit, Copy, Check, Eye, EyeOff, Trash2, X, AlertCircle, Save } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Badge } from "@/components/ui/badge"
+import { Shield, History, Edit, Copy, Check, Eye, EyeOff, Trash2, X, AlertCircle } from "lucide-react"
 import PasswordPromptModal from "./password-prompt-modal"
+import HistoryDrawer from "./history-drawer"
 
 type HistoryItem = {
   id: string
@@ -34,6 +37,7 @@ export default function PastePage({ slug, content, hasPassword, type = "paste" }
   const [isVerifying, setIsVerifying] = useState(false)
   const [selectedHistory, setSelectedHistory] = useState<HistoryItem | null>(null)
   const [showPasswordModal, setShowPasswordModal] = useState(false)
+  const [modalMode, setModalMode] = useState<"verify" | "add">("verify")
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout>()
   const verifiedPasswordRef = useRef<string>("")
 
@@ -93,6 +97,7 @@ export default function PastePage({ slug, content, hasPassword, type = "paste" }
 
   const handleEditClick = () => {
     if (hasPassword && !isPasswordVerified) {
+      setModalMode("verify")
       setShowPasswordModal(true)
     } else {
       setIsEditing(true)
@@ -102,11 +107,17 @@ export default function PastePage({ slug, content, hasPassword, type = "paste" }
 
   const handleHistoryClick = () => {
     if (hasPassword && !isPasswordVerified) {
+      setModalMode("verify")
       setShowPasswordModal(true)
     } else {
       setShowHistory(!showHistory)
       if (!showHistory) fetchHistory()
     }
+  }
+
+  const handleAddPasswordClick = () => {
+    setModalMode("add")
+    setShowPasswordModal(true)
   }
 
   const handlePasswordVerify = async (password: string) => {
@@ -131,8 +142,10 @@ export default function PastePage({ slug, content, hasPassword, type = "paste" }
         setIsPasswordVerified(true)
         verifiedPasswordRef.current = password
         setShowPasswordModal(false)
-        setIsEditing(true)
-        fetchHistory()
+        if (modalMode === "verify") {
+          setIsEditing(true)
+          fetchHistory()
+        }
       } else {
         setPasswordError("Password salah. Coba lagi.")
       }
@@ -140,38 +153,6 @@ export default function PastePage({ slug, content, hasPassword, type = "paste" }
       setPasswordError(err.message || "Verifikasi gagal. Coba lagi.")
     } finally {
       setIsVerifying(false)
-    }
-  }
-
-  const handleSaveAndExit = async () => {
-    try {
-      setAutoSaveStatus("saving")
-      
-      const res = await fetch("/api/paste/update", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          slug,
-          content: editContent,
-          password: verifiedPasswordRef.current,
-        }),
-      })
-
-      if (!res.ok) {
-        const error = await res.text()
-        throw new Error(error)
-      }
-
-      const result = await res.json()
-      setCurrentContent(editContent)
-      setAutoSaveStatus("saved")
-      setIsEditing(false)
-      
-      // Update history after save
-      fetchHistory()
-    } catch (err) {
-      console.error("Save error:", err)
-      setAutoSaveStatus("error")
     }
   }
 
@@ -213,8 +194,19 @@ export default function PastePage({ slug, content, hasPassword, type = "paste" }
         isOpen={showPasswordModal}
         onClose={() => setShowPasswordModal(false)}
         onVerify={handlePasswordVerify}
-        title="Masukkan Password"
-        description="Paste ini dilindungi password. Masukkan password untuk mengedit."
+        title={modalMode === "verify" ? "Masukkan Password" : "Tambahkan Password"}
+        description={modalMode === "verify" ? "Paste ini dilindungi password. Masukkan password untuk mengedit." : "Tambahkan password untuk melindungi paste ini dari edit oleh orang lain."}
+      />
+
+      <HistoryDrawer
+        isOpen={showHistory}
+        onClose={() => setShowHistory(false)}
+        history={history}
+        selectedHistory={selectedHistory}
+        onSelectHistory={(item) => {
+          setSelectedHistory(item)
+          setEditContent(item.content)
+        }}
       />
 
       <div className="container max-w-4xl py-8 px-4">
@@ -225,10 +217,10 @@ export default function PastePage({ slug, content, hasPassword, type = "paste" }
                 <div className="flex items-center gap-3">
                   <h1 className="text-2xl font-bold text-foreground truncate">door.id/{slug}</h1>
                   {hasPassword && (
-                    <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 px-2.5 py-0.5 text-xs font-semibold text-primary bg-primary/10">
+                    <Badge variant="outline" className="gap-1.5 border-primary/30 text-primary bg-primary/10">
                       <Shield className="h-3.5 w-3.5" />
                       Dilindungi
-                    </div>
+                    </Badge>
                   )}
                 </div>
                 <p className="text-sm text-muted-foreground">
@@ -255,23 +247,13 @@ export default function PastePage({ slug, content, hasPassword, type = "paste" }
                       </span>
                     )}
                     <Button
-                      variant="default"
-                      size="sm"
-                      onClick={handleSaveAndExit}
-                      className="gap-2 bg-green-600 hover:bg-green-700"
-                      disabled={autoSaveStatus === "saving"}
-                    >
-                      <Save className="h-4 w-4" />
-                      Simpan & Keluar
-                    </Button>
-                    <Button
                       variant="outline"
                       size="sm"
                       onClick={handleCancelEdit}
                       className="gap-2"
                     >
                       <X className="h-4 w-4" />
-                      Batal
+                      Batal Edit
                     </Button>
                   </div>
                 ) : (
@@ -329,7 +311,10 @@ export default function PastePage({ slug, content, hasPassword, type = "paste" }
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setShowPasswordModal(true)}
+                    onClick={() => {
+                      setModalMode("verify")
+                      setShowPasswordModal(true)
+                    }}
                     className="gap-2"
                   >
                     <Shield className="h-4 w-4" />
@@ -374,8 +359,8 @@ export default function PastePage({ slug, content, hasPassword, type = "paste" }
             </div>
 
             {!isEditing && selectedHistory && (
-              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm text-blue-700">
+              <Alert>
+                <AlertDescription className="text-sm">
                   Anda sedang melihat versi lama dari {new Date(selectedHistory.created_at).toLocaleString("id-ID")}.
                   <Button
                     variant="link"
@@ -385,97 +370,28 @@ export default function PastePage({ slug, content, hasPassword, type = "paste" }
                   >
                     Kembali ke versi terbaru
                   </Button>
-                </p>
-              </div>
-            )}
-
-            {showHistory && history.length > 0 && (
-              <div className="mt-4 p-4 border rounded-lg bg-muted/50">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-medium text-lg">📜 Riwayat Edit</h3>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowHistory(false)}
-                    className="h-8 w-8 p-0"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="space-y-2 max-h-60 overflow-y-auto">
-                  {history.map((item) => (
-                    <div 
-                      key={item.id} 
-                      className={`p-3 border rounded hover:bg-accent transition-colors ${selectedHistory?.id === item.id ? 'bg-blue-50 border-blue-300' : ''}`}
-                    >
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <div className="text-sm font-medium">
-                            {new Date(item.created_at).toLocaleString('id-ID', {
-                              day: 'numeric',
-                              month: 'short',
-                              year: 'numeric',
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}
-                          </div>
-                          <div className="text-xs text-muted-foreground mt-1">
-                            {item.content.length > 100 ? item.content.substring(0, 100) + '...' : item.content}
-                          </div>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setSelectedHistory(item)}
-                            className="h-7 text-xs"
-                          >
-                            Lihat
-                          </Button>
-                          {selectedHistory?.id === item.id && (
-                            <Button
-                              variant="default"
-                              size="sm"
-                              onClick={() => {
-                                // Restore this version
-                                setEditContent(item.content)
-                                setCurrentContent(item.content)
-                                setSelectedHistory(null)
-                              }}
-                              className="h-7 text-xs bg-green-600 hover:bg-green-700"
-                            >
-                              Pulihkan
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-3 pt-3 border-t text-sm text-muted-foreground">
-                  Total {history.length} versi tersimpan
-                </div>
-              </div>
+                </AlertDescription>
+              </Alert>
             )}
 
             {!isEditing && !selectedHistory && !hasPassword && (
-              <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <p className="text-sm text-yellow-700 flex items-center gap-2">
+              <Alert>
+                <AlertDescription className="text-sm flex items-center gap-2">
                   <Eye className="h-4 w-4" />
                   <span>
                     <strong>Siapa saja bisa mengedit</strong> paste ini karena tidak dilindungi password.
                     Untuk melindunginya, klik Edit lalu password akan diminta.
                   </span>
-                </p>
-              </div>
+                </AlertDescription>
+              </Alert>
             )}
 
             {!isEditing && isPasswordVerified && (
-              <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-sm text-green-700">
+              <Alert variant="success">
+                <AlertDescription className="text-sm">
                   ✅ Password terverifikasi. Anda bisa mengedit paste ini.
-                </p>
-              </div>
+                </AlertDescription>
+              </Alert>
             )}
           </CardContent>
         </Card>
