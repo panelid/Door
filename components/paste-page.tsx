@@ -276,7 +276,17 @@ export default function PastePage({ slug, content, hasPassword, type = "paste" }
                   </div>
                 ) : (
                   <>
-                    {hasPassword ? null : (
+                    {hasPassword ? (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowPasswordModal(true)}
+                        className="gap-2 shadow-sm hover:shadow-md transition-all"
+                      >
+                        <Shield className="h-4 w-4" />
+                        Edit (Butuh Password)
+                      </Button>
+                    ) : (
                       <Button
                         variant="outline"
                         size="sm"
