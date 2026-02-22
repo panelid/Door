@@ -148,21 +148,13 @@ export default function HomePage() {
               Semua dalam satu tempat yang powerful dan mudah digunakan.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+            <div className="flex gap-4 justify-center pt-6">
               <Button 
                 size="lg" 
                 className="px-8 py-6 text-lg font-semibold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-xl hover:shadow-2xl transition-all hover:scale-105"
                 onClick={() => document.getElementById('create-link-section')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 🚀 Buat Link Pertama Anda
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="px-8 py-6 text-lg font-semibold border-2 hover:bg-accent/10 hover:border-accent shadow-lg hover:shadow-xl transition-all"
-                onClick={() => window.open('https://github.com/panelid/Door', '_blank')}
-              >
-                ⭐ Lihat di GitHub
               </Button>
             </div>
 
