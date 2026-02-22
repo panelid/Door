@@ -185,7 +185,7 @@ export default function HomePage() {
                     className="gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                   >
                     <FileText className="h-4 w-4" />
-                    <span className="hidden sm:inline">Paste</span>
+                    <span className="hidden sm:inline">Teks Rahasia</span>
                   </TabsTrigger>
                   <TabsTrigger
                     value="linktree"
@@ -272,12 +272,15 @@ function WhatsAppForm({
     <form onSubmit={handleSubmit} className="space-y-6 pt-6">
       <div className="space-y-3">
         <Label htmlFor="wa-slug" className="text-base font-medium">
-          Custom Slug
+          Nama Link Custom
         </Label>
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground font-medium">door.id/</span>
-          <Input id="wa-slug" name="slug" placeholder="my-whatsapp" required className="text-base" />
+          <Input id="wa-slug" name="slug" placeholder="link-whatsapp-saya" required className="text-base" />
         </div>
+        <p className="text-sm text-muted-foreground">
+          Buat link custom yang mudah diingat. Contoh: kontak-wa, hubungi-saya, whatsapp-bisnis
+        </p>
       </div>
       <div className="space-y-3">
         <Label htmlFor="wa-phone" className="text-base font-medium">
@@ -327,27 +330,41 @@ function PasteForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 pt-6">
+      <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <h3 className="font-semibold text-blue-800 mb-2">[🔒] Simpan & Bagikan Teks</h3>
+        <p className="text-sm text-blue-700">
+          Bagikan dan pindahkan teks antar perangkat atau antar orang/team hanya dengan link, 
+          Edit dan bagikan text tanpa login. Lindungi dengan password opsional.
+        </p>
+      </div>
+      
       <div className="space-y-3">
         <Label htmlFor="paste-slug" className="text-base font-medium">
-          Custom Slug
+          Nama Link Custom
         </Label>
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground font-medium">door.id/</span>
-          <Input id="paste-slug" name="slug" placeholder="my-paste" required className="text-base" />
+          <Input id="paste-slug" name="slug" placeholder="catatan-rahasia" required className="text-base" />
         </div>
+        <p className="text-sm text-muted-foreground">
+          Buat link custom yang mudah diingat. Contoh: catatan-rahasia, draft-proyek, kode-backend
+        </p>
       </div>
       <div className="space-y-3">
         <Label htmlFor="paste-content" className="text-base font-medium">
-          Konten
+          Teks Anda
         </Label>
         <Textarea
           id="paste-content"
           name="content"
-          placeholder="Tempel teks Anda di sini..."
+          placeholder="Tempel teks di sini... kode program, konfigurasi, catatan rahasia, atau apapun"
           rows={8}
           required
           className="font-mono text-sm"
         />
+        <p className="text-sm text-muted-foreground">
+          Markdown didukung. Format teks akan tetap terjaga.
+        </p>
       </div>
       <div className="space-y-3">
         <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
@@ -478,12 +495,15 @@ function LinktreeForm({
     <form onSubmit={handleSubmit} className="space-y-6 pt-6">
       <div className="space-y-3">
         <Label htmlFor="linktree-slug" className="text-base font-medium">
-          Custom Slug
+          Nama Link Custom
         </Label>
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground font-medium">door.id/</span>
-          <Input id="linktree-slug" name="slug" placeholder="my-links" required className="text-base" />
+          <Input id="linktree-slug" name="slug" placeholder="linktree-saya" required className="text-base" />
         </div>
+        <p className="text-sm text-muted-foreground">
+          Buat link bio Anda sendiri. Contoh: linktree-saya, semua-link, bio-instagram
+        </p>
       </div>
       <div className="space-y-4">
         <Label className="text-base font-medium">Links</Label>
@@ -544,12 +564,15 @@ function ShortUrlForm({
     <form onSubmit={handleSubmit} className="space-y-6 pt-6">
       <div className="space-y-3">
         <Label htmlFor="short-slug" className="text-base font-medium">
-          Custom Slug
+          Nama Link Custom
         </Label>
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground font-medium">door.id/</span>
-          <Input id="short-slug" name="slug" placeholder="my-link" required className="text-base" />
+          <Input id="short-slug" name="slug" placeholder="link-pendek" required className="text-base" />
         </div>
+        <p className="text-sm text-muted-foreground">
+          Buat link pendek yang mudah diingat dan di-share. Contoh: promo-saya, artikel-terbaru, link-penting
+        </p>
       </div>
       <div className="space-y-3">
         <Label htmlFor="short-url" className="text-base font-medium">
