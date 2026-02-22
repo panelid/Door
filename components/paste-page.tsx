@@ -4,11 +4,8 @@ import { useEffect, useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Badge } from "@/components/ui/badge"
 import { Shield, History, Edit, Copy, Check, Eye, EyeOff, Trash2, X, AlertCircle } from "lucide-react"
 import PasswordPromptModal from "./password-prompt-modal"
-import HistoryDrawer from "./history-drawer"
 
 type HistoryItem = {
   id: string
@@ -188,17 +185,6 @@ export default function PastePage({ slug, content, hasPassword, type = "paste" }
         description="Paste ini dilindungi password. Masukkan password untuk mengedit."
       />
 
-      <HistoryDrawer
-        isOpen={showHistory}
-        onClose={() => setShowHistory(false)}
-        history={history}
-        selectedHistory={selectedHistory}
-        onSelectHistory={(item) => {
-          setSelectedHistory(item)
-          setEditContent(item.content)
-        }}
-      />
-
       <div className="container max-w-4xl py-8 px-4">
         <Card className="shadow-2xl border-border/50 backdrop-blur bg-gradient-to-b from-background to-secondary/20">
           <CardHeader className="border-b border-border/40">
@@ -207,10 +193,10 @@ export default function PastePage({ slug, content, hasPassword, type = "paste" }
                 <div className="flex items-center gap-3">
                   <h1 className="text-2xl font-bold text-foreground truncate">door.id/{slug}</h1>
                   {hasPassword && (
-                    <Badge variant="outline" className="gap-1.5 border-primary/30 text-primary bg-primary/10">
+                    <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 px-2.5 py-0.5 text-xs font-semibold text-primary bg-primary/10">
                       <Shield className="h-3.5 w-3.5" />
                       Dilindungi
-                    </Badge>
+                    </div>
                   )}
                 </div>
                 <p className="text-sm text-muted-foreground">
@@ -346,8 +332,8 @@ export default function PastePage({ slug, content, hasPassword, type = "paste" }
             </div>
 
             {!isEditing && selectedHistory && (
-              <Alert>
-                <AlertDescription className="text-sm">
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-700">
                   Anda sedang melihat versi lama dari {new Date(selectedHistory.created_at).toLocaleString("id-ID")}.
                   <Button
                     variant="link"
@@ -357,28 +343,28 @@ export default function PastePage({ slug, content, hasPassword, type = "paste" }
                   >
                     Kembali ke versi terbaru
                   </Button>
-                </AlertDescription>
-              </Alert>
+                </p>
+              </div>
             )}
 
             {!isEditing && !selectedHistory && !hasPassword && (
-              <Alert>
-                <AlertDescription className="text-sm flex items-center gap-2">
+              <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p className="text-sm text-yellow-700 flex items-center gap-2">
                   <Eye className="h-4 w-4" />
                   <span>
                     <strong>Siapa saja bisa mengedit</strong> paste ini karena tidak dilindungi password.
                     Untuk melindunginya, klik Edit lalu password akan diminta.
                   </span>
-                </AlertDescription>
-              </Alert>
+                </p>
+              </div>
             )}
 
             {!isEditing && isPasswordVerified && (
-              <Alert variant="success">
-                <AlertDescription className="text-sm">
+              <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-sm text-green-700">
                   ✅ Password terverifikasi. Anda bisa mengedit paste ini.
-                </AlertDescription>
-              </Alert>
+                </p>
+              </div>
             )}
           </CardContent>
         </Card>
