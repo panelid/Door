@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { Shield, History, Edit, Copy, Check, Eye, EyeOff, Trash2, X, AlertCircle, Save } from "lucide-react"
+import { Shield, History, Edit, Copy, Check, Eye, EyeOff, Trash2, X, AlertCircle, Save, RotateCcw, SaveIcon } from "lucide-react"
 import PasswordPromptModal from "./password-prompt-modal"
 
 type HistoryItem = {
@@ -37,6 +37,39 @@ export default function PastePage({ slug, content, hasPassword, type = "paste" }
   const [requestedAction, setRequestedAction] = useState<"edit" | "history">("edit")
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout>()
   const verifiedPasswordRef = useRef<string>("")
+  const [showExitConfirm, setShowExitConfirm] = useState(false)
+
+  // Check localStorage for password verification on mount
+  useEffect(() => {
+    if (hasPassword && !isPasswordVerified) {
+      const storedVerified = localStorage.getItem(`door-paste-${slug}-verified`)
+      const verifiedAt = localStorage.getItem(`door-paste-${slug}-verified-at`)
+      
+      if (storedVerified === 'true' && verifiedAt) {
+        const hourAgo = Date.now() - (60 * 60 * 1000) // 1 hour
+        if (parseInt(verifiedAt) > hourAgo) {
+          setIsPasswordVerified(true)
+        }
+      }
+    }
+  }, [slug, hasPassword])
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (isEditing && e.ctrlKey && e.key === 's') {
+        e.preventDefault()
+        handleSaveAndExit()
+      }
+      if (isEditing && e.key === 'Escape') {
+        e.preventDefault()
+        handleCancelEdit()
+      }
+    }
+    
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isEditing])
 
   // Auto-save functionality via API
   useEffect(() => {
@@ -135,6 +168,10 @@ export default function PastePage({ slug, content, hasPassword, type = "paste" }
         verifiedPasswordRef.current = password
         setShowPasswordModal(false)
         
+        // Save verification in localStorage (valid for 1 hour)
+        localStorage.setItem(`door-paste-${slug}-verified`, 'true')
+        localStorage.setItem(`door-paste-${slug}-verified-at`, Date.now().toString())
+        
         // Execute the requested action
         if (requestedAction === "edit") {
           setIsEditing(true)
@@ -188,6 +225,9 @@ export default function PastePage({ slug, content, hasPassword, type = "paste" }
   }
 
   const handleCancelEdit = () => {
+    if (editContent !== currentContent && !confirm("Edit Anda belum disimpan. Yakin ingin keluar?")) {
+      return
+    }
     setIsEditing(false)
     setEditContent(currentContent)
     setAutoSaveStatus("idle")
@@ -252,19 +292,28 @@ export default function PastePage({ slug, content, hasPassword, type = "paste" }
                 {isEditing ? (
                   <div className="flex items-center gap-2">
                     {autoSaveStatus === "saving" && (
-                      <span className="text-xs text-yellow-600">
-                        Menyimpan...
-                      </span>
+                      <div className="flex items-center gap-2 animate-pulse">
+                        <div className="h-3 w-3 rounded-full bg-blue-500 animate-ping" />
+                        <span className="text-xs text-blue-600 font-medium">
+                          Menyimpan...
+                        </span>
+                      </div>
                     )}
                     {autoSaveStatus === "saved" && (
-                      <span className="text-xs text-green-600">
-                        Tersimpan
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <Check className="h-4 w-4 text-green-500 animate-bounce" />
+                        <span className="text-xs text-green-600 font-medium">
+                          Tersimpan!
+                        </span>
+                      </div>
                     )}
                     {autoSaveStatus === "error" && (
-                      <span className="text-xs text-red-600">
-                        Gagal menyimpan
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <AlertCircle className="h-4 w-4 text-red-500" />
+                        <span className="text-xs text-red-600 font-medium">
+                          Gagal menyimpan
+                        </span>
+                      </div>
                     )}
                     <Button
                       variant="default"
@@ -382,24 +431,30 @@ export default function PastePage({ slug, content, hasPassword, type = "paste" }
                     className="min-h-[300px] font-mono text-sm"
                     placeholder="Edit paste Anda di sini..."
                   />
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-3 text-sm">
                     {autoSaveStatus === "saving" && (
-                      <>
-                        <div className="h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                        Menyimpan...
-                      </>
+                      <div className="flex items-center gap-2 animate-pulse text-blue-600">
+                        <div className="h-3 w-3 rounded-full bg-blue-500 animate-ping" />
+                        <span className="font-medium">Menyimpan...</span>
+                      </div>
                     )}
                     {autoSaveStatus === "saved" && (
-                      <>
-                        <Check className="h-3 w-3 text-green-500" />
-                        Tersimpan
-                      </>
+                      <div className="flex items-center gap-2 text-green-600">
+                        <Check className="h-4 w-4 text-green-500 animate-bounce" />
+                        <span className="font-medium">Tersimpan!</span>
+                      </div>
                     )}
                     {autoSaveStatus === "error" && (
-                      <>
-                        <AlertCircle className="h-3 w-3 text-red-500" />
-                        Gagal menyimpan
-                      </>
+                      <div className="flex items-center gap-2 text-red-600">
+                        <AlertCircle className="h-4 w-4 text-red-500" />
+                        <span className="font-medium">Gagal menyimpan</span>
+                      </div>
+                    )}
+                    {autoSaveStatus === "idle" && editContent !== currentContent && (
+                      <div className="flex items-center gap-2 text-amber-600">
+                        <div className="h-3 w-3 rounded-full bg-amber-500" />
+                        <span className="font-medium">Belum disimpan</span>
+                      </div>
                     )}
                   </div>
                 </div>
