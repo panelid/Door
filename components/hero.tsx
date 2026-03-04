@@ -1,104 +1,95 @@
 "use client"
 
-import { Zap, Shield, Sparkles, ArrowRight } from "lucide-react"
 import Link from "next/link"
+import { Zap, Shield, Sparkles, ArrowRight, Link as LinkIcon } from "lucide-react"
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden">
-      {/* Background Gradient */}
-      <div className="absolute inset-0 gradient-subtle pointer-events-none" />
-      
-      <div className="container-tight section-padding relative">
-        <div className="text-center space-y-8">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/10 text-sm font-medium text-primary animate-fade-in">
-            <Sparkles className="h-4 w-4" />
-            Platform Link Management Terbaik Indonesia
+    <section className="relative min-h-screen overflow-hidden pt-24 md:pt-32">
+      <div className="container-modern">
+        <div className="section-padding">
+          {/* Content */}
+          <div className="max-w-3xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8">
+              <Sparkles className="h-4 w-4 text-violet-500" />
+              <span className="text-sm font-medium">Platform Link Management Modern</span>
+            </div>
+
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8 leading-tight">
+              <span className="block">Satu Link,</span>
+              <span className="gradient-text-animated block">Kemungkinan Tak Terbatas</span>
+            </h1>
+
+            <p className="text-lg md:text-xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed text-readable">
+              Buat link WhatsApp custom, bagikan teks dengan proteksi, 
+              bangun link-in-bio, atau perpendek URL — semua dalam satu dashboard yang elegan.
+            </p>
+
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+              <Link href="/#create" className="btn-modern-primary w-full sm:w-auto">
+                Buat Link Sekarang
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+              <Link href="/dashboard" className="btn-modern-secondary w-full sm:w-auto">
+                Lihat Dashboard
+              </Link>
+            </div>
           </div>
 
-          {/* Headline */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.1]">
-            Satu Link,{" "}
-            <span className="gradient-text">
-              Kemungkinan Tak Terbatas
-            </span>
-          </h1>
+          {/* Feature Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+            {/* Card 1 */}
+            <div className="card-modern p-8 md:p-10">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center mb-6 shadow-lg shadow-violet-500/30">
+                <LinkIcon className="h-7 w-7 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold mb-3">WhatsApp Link</h3>
+              <p className="text-muted-foreground text-readable">
+                Buat link WhatsApp custom dengan pesan otomatis. Pelanggan tinggal klik dan langsung chat dengan Anda.
+              </p>
+            </div>
 
-          {/* Subheadline */}
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Buat link WhatsApp custom, bagikan teks dengan password, 
-            bangun link-in-bio, atau perpendek URL. Semua dalam satu platform.
-          </p>
+            {/* Card 2 */}
+            <div className="card-modern p-8 md:p-10">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mb-6 shadow-lg shadow-orange-500/30">
+                <Shield className="h-7 w-7 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold mb-3">Paste dengan Password</h3>
+              <p className="text-muted-foreground text-readable">
+                Bagikan teks panjang dengan proteksi password dan riwayat perubahan yang tersimpan otomatis.
+              </p>
+            </div>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            <Link
-              href="/#create"
-              className="btn-primary inline-flex items-center gap-2 text-base px-6 py-3 shadow-large"
-            >
-              Buat Link Sekarang
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link
-              href="/dashboard"
-              className="btn-secondary inline-flex items-center gap-2 text-base px-6 py-3"
-            >
-              Lihat Dashboard
-            </Link>
+            {/* Card 3 */}
+            <div className="card-modern p-8 md:p-10">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center mb-6 shadow-lg shadow-rose-500/30">
+                <Zap className="h-7 w-7 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold mb-3">Link-in-Bio</h3>
+              <p className="text-muted-foreground text-readable">
+                Satu link elegan untuk semua sosial media Anda, dengan analytics real-time dan tampilan yang customizable.
+              </p>
+            </div>
           </div>
-        </div>
 
-        {/* Feature Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mt-16 md:mt-24">
-          <FeatureCard
-            icon={Zap}
-            title="Super Cepat"
-            description="Buat link custom dalam hitungan detik. Interface intuitif untuk semua orang."
-            color="blue"
-          />
-          <FeatureCard
-            icon={Shield}
-            title="Aman & Privat"
-            description="Password protection, analytics lengkap, dan data terenkripsi."
-            color="green"
-          />
-          <FeatureCard
-            icon={Sparkles}
-            title="Semua Fitur"
-            description="WhatsApp, Paste, Linktree, Short URL dalam satu dashboard."
-            color="purple"
-          />
+          {/* Trust Badges */}
+          <div className="flex flex-wrap items-center justify-center gap-8 mt-20 pt-12 border-t border-border/50">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Shield className="h-5 w-5 text-green-500" />
+              <span>SSL Secure</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Zap className="h-5 w-5 text-amber-500" />
+              <span>Super Cepat</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Sparkles className="h-5 w-5 text-violet-500" />
+              <span>Gratis Selamanya</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
-  )
-}
-
-function FeatureCard({
-  icon: Icon,
-  title,
-  description,
-  color,
-}: {
-  icon: React.ElementType
-  title: string
-  description: string
-  color: "blue" | "green" | "purple"
-}) {
-  const colorClasses = {
-    blue: "bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400",
-    green: "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400",
-    purple: "bg-violet-50 text-violet-600 dark:bg-violet-950/50 dark:text-violet-400",
-  }
-
-  return (
-    <div className="card-door p-6 md:p-8 hover-lift group">
-      <div className={`w-12 h-12 rounded-xl ${colorClasses[color]} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200`}>
-        <Icon className="h-6 w-6" />
-      </div>
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
-      <p className="text-muted-foreground text-sm leading-relaxed">{description}</p>
-    </div>
   )
 }
