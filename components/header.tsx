@@ -39,7 +39,12 @@ export function Header() {
         <div className="container-modern">
           <div className="flex h-16 md:h-20 items-center justify-between">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 group">
+            <Link 
+              href="/" 
+              className="flex items-center gap-3 group"
+              prefetch={false}
+              onClick={() => setMobileMenuOpen(false)}
+            >
               <div className="relative flex h-10 w-10 md:h-11 md:w-11 items-center justify-center rounded-xl overflow-hidden transition-transform duration-300 group-hover:scale-105">
                 <div className="absolute inset-0 bg-gradient-to-br from-violet-500 via-purple-500 to-fuchsia-500" />
                 <div className="absolute inset-0 bg-gradient-to-br from-violet-400/0 via-white/20 to-fuchsia-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -104,7 +109,7 @@ export function Header() {
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-40 md:hidden">
           <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm z-50"
             onClick={() => setMobileMenuOpen(false)}
           />
           <div className="absolute right-0 top-0 bottom-0 w-80 max-w-full glass-dark transform transition-transform duration-300">
