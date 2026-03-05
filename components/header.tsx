@@ -38,25 +38,26 @@ export function Header() {
       >
         <div className="container-modern">
           <div className="flex h-16 md:h-20 items-center justify-between">
-            {/* Logo */}
-            <Link 
+            {/* Logo - FIXED */}
+            <a 
               href="/" 
-              className="flex items-center gap-3 group"
-              prefetch={false}
-              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-3 group cursor-pointer"
+              onClick={(e) => {
+                e.preventDefault();
+                window.location.href = "/";
+                setMobileMenuOpen(false);
+              }}
             >
               <div className="relative flex h-10 w-10 md:h-11 md:w-11 items-center justify-center rounded-xl overflow-hidden transition-transform duration-300 group-hover:scale-105">
                 <div className="absolute inset-0 bg-gradient-to-br from-violet-500 via-purple-500 to-fuchsia-500" />
-                <div className="absolute inset-0 bg-gradient-to-br from-violet-400/0 via-white/20 to-fuchsia-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <DoorOpen className="relative h-5 w-5 md:h-6 md:w-6 text-white" />
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-xl md:text-2xl font-bold gradient-text-animated">
+                <span className="text-xl md:text-2xl font-bold gradient-text-animated cursor-pointer">
                   Door.id
                 </span>
-                <Sparkles className="h-4 w-4 text-violet-500 animate-pulse" />
               </div>
-            </Link>
+            </a>
 
             {/* Desktop Nav */}
             <nav className="hidden md:flex items-center gap-1">
