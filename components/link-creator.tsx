@@ -9,16 +9,17 @@ import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
-import { 
-  MessageSquare, 
-  FileText, 
-  Users, 
-  Link2, 
-  Loader2, 
+import {
+  MessageSquare,
+  FileText,
+  Users,
+  Link2,
+  Loader2,
   CheckCircle2,
   Lock,
   Plus,
-  X
+  X,
+  Sparkles
 } from "lucide-react"
 import { toast } from "sonner"
 
@@ -101,7 +102,7 @@ export function LinkCreator() {
       const url = `${window.location.origin}/${slug}`
       setSuccess(`Link berhasil dibuat: ${url}`)
       toast.success("Link berhasil dibuat!")
-      
+
       // Copy to clipboard
       navigator.clipboard.writeText(url)
     } catch (err) {
@@ -112,18 +113,26 @@ export function LinkCreator() {
   }
 
   return (
-    <section id="create" className="section-padding">
-      <div className="container-tight">
-        <Card className="card-door">
-          <CardHeader className="space-y-2">
-            <CardTitle className="text-2xl md:text-3xl font-bold">Buat Link Baru</CardTitle>
-            <CardDescription className="text-base">
-              Pilih tipe link dan buat custom URL Anda
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+    <section id="create" className="py-16 md:py-24 relative overflow-hidden">
+      {/* Decorative background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-purple-50/50 to-transparent dark:via-purple-950/10 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-64 h-64 bg-blue-200/20 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-64 h-64 bg-pink-200/20 dark:bg-pink-500/5 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-10">
+          <h2 className="text-3xl md:text-4xl font-bold mb-3">
+            Buat Link Baru
+          </h2>
+          <p className="text-muted-foreground text-base">
+            Pilih tipe link dan buat custom URL Anda
+          </p>
+        </div>
+
+        <Card className="border-0 shadow-xl shadow-purple-500/10 bg-gradient-to-br from-white to-purple-50/50 dark:from-card dark:to-purple-950/20">
+          <CardContent className="p-6 md:p-8">
             <Tabs defaultValue="whatsapp" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto p-1 bg-muted/50 rounded-lg">
+              <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto p-1.5 bg-gradient-to-r from-purple-100/50 to-blue-100/50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl gap-1.5">
                 <TabTrigger value="whatsapp" icon={MessageSquare} label="WhatsApp" />
                 <TabTrigger value="paste" icon={FileText} label="Paste" />
                 <TabTrigger value="linktree" icon={Users} label="Linktree" />
@@ -148,13 +157,16 @@ export function LinkCreator() {
             </Tabs>
 
             {success && (
-              <div className="mt-6 p-4 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-xl">
+              <div className="mt-6 p-4 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 border border-green-200 dark:border-green-800/50 animate-slide-up">
                 <div className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5" />
+                  <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5 shrink-0" />
                   <div>
-                    <p className="font-medium text-green-800 dark:text-green-200">Berhasil!</p>
-                    <p className="text-sm text-green-700 dark:text-green-300 mt-1">{success}</p>
-                    <p className="text-xs text-green-600 dark:text-green-400 mt-2">Link sudah disalin ke clipboard</p>
+                    <p className="font-semibold text-green-800 dark:text-green-200">Berhasil!</p>
+                    <p className="text-sm text-green-700 dark:text-green-300 mt-1 break-all">{success}</p>
+                    <p className="text-xs text-green-600 dark:text-green-400 mt-2 flex items-center gap-1">
+                      <Sparkles className="h-3 w-3" />
+                      Link sudah disalin ke clipboard
+                    </p>
                   </div>
                 </div>
               </div>
@@ -166,22 +178,22 @@ export function LinkCreator() {
   )
 }
 
-function TabTrigger({ 
-  value, 
-  icon: Icon, 
-  label 
-}: { 
+function TabTrigger({
+  value,
+  icon: Icon,
+  label
+}: {
   value: string
   icon: React.ElementType
-  label: string 
+  label: string
 }) {
   return (
-    <TabsTrigger 
+    <TabsTrigger
       value={value}
-      className="flex items-center gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-medium transition-all duration-200 rounded-md"
+      className="flex items-center gap-2 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-blue-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-purple-500/30 transition-all duration-200 rounded-lg"
     >
       <Icon className="h-4 w-4" />
-      <span className="hidden sm:inline text-sm font-medium">{label}</span>
+      <span className="hidden sm:inline text-sm font-semibold">{label}</span>
     </TabsTrigger>
   )
 }
@@ -202,17 +214,16 @@ function WhatsAppForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <SlugInput />
-      
+
       <div className="space-y-2">
         <Label htmlFor="wa-phone" className="text-sm font-medium">
           Nomor WhatsApp
         </Label>
-        <Input 
-          id="wa-phone" 
-          name="phone" 
-          placeholder="628123456789" 
-          required 
-          className="input-door"
+        <Input
+          id="wa-phone"
+          name="phone"
+          placeholder="628123456789"
+          required
         />
         <p className="text-xs text-muted-foreground">Contoh: 628123456789 (kode negara tanpa +)</p>
       </div>
@@ -226,7 +237,7 @@ function WhatsAppForm({
           name="message"
           placeholder="Halo, saya tertarik dengan..."
           rows={3}
-          className="input-door resize-none"
+          className="resize-none"
         />
       </div>
 
@@ -264,16 +275,16 @@ function PasteForm({
           placeholder="Tempel atau tulis konten Anda di sini..."
           rows={8}
           required
-          className="input-door font-mono text-sm resize-y"
+          className="font-mono text-sm resize-y"
         />
       </div>
 
       {/* Password Toggle */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50 border border-border">
+        <div className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-purple-50/50 to-blue-50/50 dark:from-purple-950/20 dark:to-blue-950/20 border border-purple-200/50 dark:border-purple-800/30">
           <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-lg transition-colors ${showPassword ? 'bg-primary/10' : 'bg-muted'}`}>
-              <Lock className={`h-4 w-4 ${showPassword ? 'text-primary' : 'text-muted-foreground'}`} />
+            <div className={`p-2 rounded-lg transition-colors ${showPassword ? 'bg-purple-100 dark:bg-purple-900/50' : 'bg-muted'}`}>
+              <Lock className={`h-4 w-4 ${showPassword ? 'text-purple-600 dark:text-purple-400' : 'text-muted-foreground'}`} />
             </div>
             <div>
               <p className="text-sm font-medium">{showPassword ? 'Dilindungi Password' : 'Edit Bebas'}</p>
@@ -285,14 +296,14 @@ function PasteForm({
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className={`relative w-11 h-6 rounded-full transition-colors ${showPassword ? 'bg-primary' : 'bg-muted-foreground/30'}`}
+            className={`relative w-11 h-6 rounded-full transition-colors ${showPassword ? 'bg-gradient-to-r from-purple-500 to-blue-500' : 'bg-muted-foreground/30'}`}
           >
             <span className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${showPassword ? 'translate-x-5' : ''}`} />
           </button>
         </div>
 
         {showPassword && (
-          <div className="space-y-3 p-4 rounded-lg bg-primary/5 border border-primary/10">
+          <div className="space-y-3 p-4 rounded-xl bg-gradient-to-r from-purple-50/80 to-pink-50/80 dark:from-purple-950/30 dark:to-pink-950/30 border border-purple-200/50 dark:border-purple-800/30 animate-slide-up">
             <Label htmlFor="paste-password" className="text-sm font-medium">
               Password Edit
             </Label>
@@ -301,7 +312,6 @@ function PasteForm({
               name="paste_password"
               type="password"
               placeholder="Masukkan password..."
-              className="input-door"
               minLength={4}
             />
             <p className="text-xs text-muted-foreground">
@@ -346,27 +356,27 @@ function LinktreeForm({
       <div className="space-y-3">
         <Label className="text-sm font-medium">Daftar Link</Label>
         {links.map((_, index) => (
-          <div key={index} className="flex gap-2 p-3 rounded-lg bg-muted/30 border border-border">
+          <div key={index} className="flex gap-2 p-4 rounded-xl bg-gradient-to-r from-purple-50/30 to-blue-50/30 dark:from-purple-950/10 dark:to-blue-950/10 border border-purple-200/30 dark:border-purple-800/20">
             <div className="flex-1 space-y-2">
               <Input
                 name={`link-title-${index}`}
                 placeholder="Judul Link"
                 required
-                className="input-door h-9"
+                className="h-9"
               />
               <Input
                 name={`link-url-${index}`}
                 type="url"
                 placeholder="https://example.com"
                 required
-                className="input-door h-9"
+                className="h-9"
               />
             </div>
             {links.length > 1 && (
               <button
                 type="button"
                 onClick={() => removeLink(index)}
-                className="p-2 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-colors"
+                className="p-2 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-colors self-start"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -377,7 +387,7 @@ function LinktreeForm({
           type="button"
           variant="outline"
           onClick={addLink}
-          className="w-full h-10 border-dashed"
+          className="w-full h-10 border-dashed border-purple-300 dark:border-purple-700 hover:border-purple-500"
         >
           <Plus className="h-4 w-4 mr-2" />
           Tambah Link
@@ -410,13 +420,12 @@ function ShortUrlForm({
         <Label htmlFor="short-url" className="text-sm font-medium">
           URL Tujuan
         </Label>
-        <Input 
-          id="short-url" 
-          name="url" 
-          type="url" 
-          placeholder="https://example.com/very-long-url" 
-          required 
-          className="input-door"
+        <Input
+          id="short-url"
+          name="url"
+          type="url"
+          placeholder="https://example.com/very-long-url"
+          required
         />
       </div>
 
@@ -432,13 +441,13 @@ function SlugInput() {
         Custom Slug
       </Label>
       <div className="flex items-center gap-2">
-        <span className="text-sm text-muted-foreground font-medium whitespace-nowrap">door.id/</span>
-        <Input 
-          id="slug" 
-          name="slug" 
-          placeholder="my-link" 
-          required 
-          className="input-door"
+        <span className="text-sm font-medium text-muted-foreground whitespace-nowrap bg-muted/50 px-3 py-2 rounded-l-md border border-r-0 border-input">door.id/</span>
+        <Input
+          id="slug"
+          name="slug"
+          placeholder="my-link"
+          required
+          className="rounded-l-none"
           pattern="[a-zA-Z0-9-_]+"
           title="Hanya huruf, angka, dash, dan underscore"
         />
@@ -450,9 +459,11 @@ function SlugInput() {
 
 function SubmitButton({ isLoading, text }: { isLoading: boolean; text: string }) {
   return (
-    <Button 
-      type="submit" 
-      className="w-full btn-primary h-11 text-base mt-2" 
+    <Button
+      type="submit"
+      variant="gradient"
+      size="xl"
+      className="w-full mt-2"
       disabled={isLoading}
     >
       {isLoading ? (
@@ -461,7 +472,10 @@ function SubmitButton({ isLoading, text }: { isLoading: boolean; text: string })
           Membuat...
         </>
       ) : (
-        text
+        <span className="flex items-center gap-2">
+          <Sparkles className="h-4 w-4" />
+          {text}
+        </span>
       )}
     </Button>
   )

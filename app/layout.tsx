@@ -1,17 +1,17 @@
 import "./globals.css"
-import { Inter, JetBrains_Mono } from "next/font/google"
+import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google"
 import type { Metadata } from "next"
 import type { ReactNode } from "react"
 
-const inter = Inter({
+const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-plus-jakarta",
   display: "swap",
 })
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
-  variable: "--font-mono",
+  variable: "--font-jetbrains-mono",
   display: "swap",
 })
 
@@ -72,8 +72,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="id" className={`${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className="font-sans antialiased min-h-screen">
+    <html lang="id" className={`${plusJakartaSans.variable} ${jetbrainsMono.variable}`}>
+      <body className="font-sans antialiased min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-[#0a0a1a] dark:via-[#0f0f1f] dark:to-[#1a0a0f]">
         {children}
       </body>
     </html>
