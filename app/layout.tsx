@@ -1,21 +1,34 @@
 import "./globals.css"
+import { Inter, JetBrains_Mono } from "next/font/google"
 import type { Metadata } from "next"
 import type { ReactNode } from "react"
 
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+})
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+})
+
 export const metadata: Metadata = {
   title: {
-    default: "Door.id - One Link, Infinite Possibilities",
+    default: "Door.id - Satu Link, Kemungkinan Tak Terbatas",
     template: "%s | Door.id",
   },
   description:
-    "Create custom short links for WhatsApp, share text snippets, build your link-in-bio, or shorten any URL. The all-in-one link management platform for Indonesia.",
+    "Buat link WhatsApp custom, bagikan teks, bangun link-in-bio Anda, atau perpendek URL apapun. Platform link management all-in-one untuk Indonesia.",
   keywords: [
     "short link",
     "url shortener",
-    "linktree",
+    "linktree indonesia",
     "link in bio",
-    "whatsapp link",
-    "paste bin",
+    "whatsapp link generator",
+    "paste text",
     "indonesia",
     "door.id",
   ],
@@ -29,9 +42,9 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL("https://door.id"),
   openGraph: {
-    title: "Door.id - One Link, Infinite Possibilities",
+    title: "Door.id - Satu Link, Kemungkinan Tak Terbatas",
     description:
-      "Create custom short links for WhatsApp, share text snippets, build your link-in-bio, or shorten any URL.",
+      "Buat link WhatsApp custom, bagikan teks, bangun link-in-bio Anda, atau perpendek URL apapun.",
     url: "https://door.id",
     siteName: "Door.id",
     locale: "id_ID",
@@ -39,9 +52,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Door.id - One Link, Infinite Possibilities",
+    title: "Door.id - Satu Link, Kemungkinan Tak Terbatas",
     description:
-      "Create custom short links for WhatsApp, share text snippets, build your link-in-bio, or shorten any URL.",
+      "Buat link WhatsApp custom, bagikan teks, bangun link-in-bio Anda, atau perpendek URL apapun.",
     creator: "@doorid",
   },
   robots: {
@@ -55,14 +68,14 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-    generator: 'v0.app'
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="id">
-      <head />
-      <body>{children}</body>
+    <html lang="id" className={`${inter.variable} ${jetbrainsMono.variable}`}>
+      <body className="font-sans antialiased min-h-screen">
+        {children}
+      </body>
     </html>
   )
 }

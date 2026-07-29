@@ -58,27 +58,51 @@ export function EditSlugDialog({ slug }: EditSlugDialogProps) {
     e.preventDefault()
     setIsLoading(true)
 
-    const supabase = createClient()
-
     try {
-      const updateData: any = {
-        updated_at: new Date().toISOString(),
-      }
-
       if (slug.type === "paste") {
-        const { password, ...dataWithoutPassword } = formData as any
-        updateData.data = dataWithoutPassword
-        updateData.paste_password = password || null
+        // Use API endpoint for paste to handle password verification and history
+        const { password, content } = formData as any
+        
+        const res = await fetch("/api/paste/update", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            slug: slug.slug,
+            content: content,
+            password: password || undefined,
+          }),
+        })
+
+        if (!res.ok) {
+          const data = await res.json()
+          throw new Error(data.error || "Failed to update paste")
+        }
+
+        // Update password in DB if changed (for owner only)
+        if (password !== slug.paste_password) {
+          const supabase = createClient()
+          const { error } = await supabase
+            .from("slugs")
+            .update({ paste_password: password || null })
+            .eq("id", slug.id)
+          
+          if (error) throw error
+        }
       } else {
-        updateData.data = formData
+        // For non-paste types, use direct Supabase update
+        const supabase = createClient()
+        const updateData: any = {
+          updated_at: new Date().toISOString(),
+          data: formData,
+        }
+
+        const { error } = await supabase
+          .from("slugs")
+          .update(updateData)
+          .eq("id", slug.id)
+
+        if (error) throw error
       }
-
-      const { error } = await supabase
-        .from("slugs")
-        .update(updateData)
-        .eq("id", slug.id)
-
-      if (error) throw error
 
       toast.success("Link updated successfully!")
       setOpen(false)

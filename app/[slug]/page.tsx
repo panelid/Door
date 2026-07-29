@@ -32,12 +32,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function SlugPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
 
-  console.log("[v0] SlugPage - Processing slug:", slug)
-
   // Reserved routes that should not be treated as slugs
   const reservedRoutes = ["dashboard", "auth", "api", "admin", "settings", "_next", "public"]
   if (reservedRoutes.includes(slug.toLowerCase())) {
-    console.log("[v0] SlugPage - Reserved route detected")
     // Redirect reserved routes to 404 page instead of treating as slugs
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -53,10 +50,7 @@ export default async function SlugPage({ params }: { params: Promise<{ slug: str
 
   const { data: slugData, error } = await supabase.from("slugs").select("*").eq("slug", slug).maybeSingle()
 
-  console.log("[v0] SlugPage - Database query result:", { found: !!slugData, error: error?.message })
-
   if (error || !slugData) {
-    console.log("[v0] SlugPage - Slug not found")
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -67,35 +61,41 @@ export default async function SlugPage({ params }: { params: Promise<{ slug: str
     )
   }
 
-  console.log("[v0] SlugPage - Slug type:", slugData.type)
-
   switch (slugData.type) {
     case "whatsapp": {
       const phone = slugData.data.phone.replace(/\D/g, "")
       const message = slugData.data.message ? `?text=${encodeURIComponent(slugData.data.message)}` : ""
       const whatsappUrl = `https://wa.me/${phone}${message}`
-      console.log("[v0] SlugPage - Redirecting to WhatsApp:", whatsappUrl)
       redirect(whatsappUrl)
       break
     }
 
     case "shorturl": {
       const targetUrl = slugData.data.url
-      console.log("[v0] SlugPage - Redirecting to short URL:", targetUrl)
       redirect(targetUrl)
       break
     }
 
-    case "paste":
-      console.log("[v0] SlugPage - Rendering paste page")
-      return <PastePage slug={slug} content={slugData.data.content} hasPassword={!!slugData.paste_password} />
+    case "paste": {
+      
+      // Get current user to check ownership
+      const { data: { user } } = await supabase.auth.getUser()
+      const isOwner = user && slugData.user_id && user.id === slugData.user_id
+      
+      return (
+        <PastePage 
+          slug={slug} 
+          content={slugData.data.content} 
+          hasPassword={!!slugData.paste_password}
+          isOwner={isOwner}
+        />
+      )
+    }
 
     case "linktree":
-      console.log("[v0] SlugPage - Rendering linktree page")
       return <LinktreePage slug={slug} links={slugData.data.links} />
 
     default:
-      console.log("[v0] SlugPage - Unknown type, calling notFound()")
       notFound()
   }
 }
