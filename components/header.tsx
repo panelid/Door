@@ -1,123 +1,70 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { DoorOpen, Menu, X, Sparkles } from "lucide-react"
+import { Menu, X, Sparkles } from "lucide-react"
 
 export function Header() {
-  const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20)
-    }
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
-
-  const isActive = (path: string) => pathname === path
 
   const navLinks = [
     { href: "/", label: "Buat Link" },
     { href: "/dashboard", label: "Dashboard" },
-    { href: "/analytics", label: "Analytics" },
+    { href: "/auth/login", label: "Masuk" },
   ]
 
   return (
     <>
-      <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled
-            ? "glass shadow-lg border-b border-white/20"
-            : "bg-transparent"
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 md:h-20 items-center justify-between">
-            {/* Logo */}
-            <a
-              href="/"
-              className="flex items-center gap-3 group cursor-pointer"
-              onClick={(e) => {
-                e.preventDefault();
-                window.location.href = "/";
-                setMobileMenuOpen(false);
-              }}
-            >
-              <div className="relative flex h-10 w-10 md:h-11 md:w-11 items-center justify-center rounded-xl overflow-hidden transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
-                <div className="absolute inset-0 bg-gradient-to-br from-violet-500 via-purple-500 to-fuchsia-500 animate-gradient" />
-                <DoorOpen className="relative h-5 w-5 md:h-6 md:w-6 text-white" />
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-xl md:text-2xl font-bold gradient-text-animated cursor-pointer">
-                  Door.id
-                </span>
-              </div>
-            </a>
-
-            {/* Desktop Nav */}
-            <nav className="hidden md:flex items-center gap-1">
-              {navLinks.map((link) => (
-                <NavLink
-                  key={link.href}
-                  href={link.href}
-                  active={isActive(link.href)}
-                >
-                  {link.label}
-                </NavLink>
-              ))}
-            </nav>
-
-            {/* Actions */}
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                asChild
-                className="hidden sm:flex text-muted-foreground hover:text-foreground hover:bg-white/10"
-              >
-                <Link href="/auth/login">Masuk</Link>
-              </Button>
-              <Button
-                variant="gradient"
-                size="sm"
-                asChild
-                className="hidden sm:flex"
-              >
-                <Link href="/auth/register">
-                  <Sparkles className="h-4 w-4" />
-                  Daftar
-                </Link>
-              </Button>
-
-              {/* Mobile Menu Button */}
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-2.5 rounded-xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 hover:from-purple-500/30 hover:to-blue-500/30 transition-all border border-purple-200/30 dark:border-purple-500/20"
-              >
-                {mobileMenuOpen ? (
-                  <X className="h-5 w-5" />
-                ) : (
-                  <Menu className="h-5 w-5" />
-                )}
-              </button>
-            </div>
+      <header className="sticky top-0 z-10 bg-white flex items-center justify-between px-4 py-3.5 border-b border-[#E7E5F0]">
+        <Link href="/" className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-pink-500 flex items-center justify-center text-white text-lg flex-shrink-0">
+            🚪
           </div>
+          <span className="text-[19px] font-extrabold bg-gradient-to-r from-violet-600 to-pink-500 bg-clip-text text-transparent">
+            Door.id
+          </span>
+        </Link>
+
+        <div className="hidden md:flex items-center gap-2">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-sm text-[#767489] hover:text-violet-600 font-medium px-3 py-1.5 transition-colors"
+            >
+              {link.label}
+            </Link>
+          ))}
+          <Button
+            variant="gradient"
+            size="sm"
+            asChild
+            className="ml-2"
+          >
+            <Link href="/auth/sign-up">
+              <Sparkles className="h-3.5 w-3.5 mr-1" />
+              Daftar
+            </Link>
+          </Button>
         </div>
+
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="w-9 h-9 rounded-lg bg-violet-50 flex items-center justify-center text-violet-600 md:hidden"
+        >
+          {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
       </header>
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-40 md:hidden">
+        <div className="fixed inset-0 z-50 md:hidden">
           <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm z-50"
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setMobileMenuOpen(false)}
           />
-          <div className="absolute right-0 top-0 bottom-0 w-80 max-w-full glass-dark transform transition-transform duration-300">
+          <div className="absolute right-0 top-0 bottom-0 w-72 max-w-full bg-white shadow-xl">
             <div className="p-6 pt-20">
               <nav className="space-y-2">
                 {navLinks.map((link) => (
@@ -125,34 +72,20 @@ export function Header() {
                     key={link.href}
                     href={link.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`block px-4 py-3 rounded-xl text-lg font-medium transition-all ${
-                      isActive(link.href)
-                        ? "bg-gradient-to-r from-violet-500/20 to-blue-500/20 text-violet-300 border border-violet-500/30"
-                        : "text-white/70 hover:text-white hover:bg-white/10"
-                    }`}
+                    className="block px-4 py-3 rounded-xl text-base font-medium text-[#767489] hover:text-violet-600 hover:bg-violet-50 transition-all"
                   >
                     {link.label}
                   </Link>
                 ))}
               </nav>
-
-              <div className="mt-8 pt-8 border-t border-white/10 space-y-3">
+              <div className="mt-8 pt-6 border-t border-[#E7E5F0]">
                 <Button
-                  variant="outline"
-                  className="w-full h-12 border-white/20 text-white hover:bg-white/10"
+                  variant="gradient"
+                  className="w-full"
                   asChild
                 >
-                  <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>
-                    Masuk
-                  </Link>
-                </Button>
-                <Button
-                  variant="gradient-rainbow"
-                  className="w-full h-12"
-                  asChild
-                >
-                  <Link href="/auth/register" onClick={() => setMobileMenuOpen(false)}>
-                    <Sparkles className="h-4 w-4" />
+                  <Link href="/auth/sign-up" onClick={() => setMobileMenuOpen(false)}>
+                    <Sparkles className="h-4 w-4 mr-1.5" />
                     Daftar Gratis
                   </Link>
                 </Button>
@@ -162,34 +95,5 @@ export function Header() {
         </div>
       )}
     </>
-  )
-}
-
-function NavLink({
-  href,
-  active,
-  children,
-}: {
-  href: string
-  active: boolean
-  children: React.ReactNode
-}) {
-  return (
-    <Link
-      href={href}
-      className={`relative px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-        active
-          ? "text-foreground"
-          : "text-muted-foreground hover:text-foreground"
-      }`}
-    >
-      {active && (
-        <span
-          className="absolute inset-0 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30 rounded-xl -z-10"
-          style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
-        />
-      )}
-      {children}
-    </Link>
   )
 }

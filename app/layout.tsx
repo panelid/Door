@@ -73,7 +73,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="id" className={`${plusJakartaSans.variable} ${jetbrainsMono.variable}`}>
-      <body className="font-sans antialiased min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-[#0a0a1a] dark:via-[#0f0f1f] dark:to-[#1a0a0f]">
+      <body className="font-sans antialiased min-h-screen bg-[#F7F6FB] dark:bg-[#0a0a1a]">
         {children}
       </body>
     </html>
