@@ -2,10 +2,9 @@ import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { Link2, MessageSquare, FileText, Users, ExternalLink, Mail, Sparkles, BarChart3, Activity, Globe, Plus, ArrowRight } from "lucide-react"
+import { Link2, MessageSquare, FileText, Users, ExternalLink, Mail, Sparkles, BarChart3, Plus, Search, QrCode } from "lucide-react"
 import { DeleteSlugButton } from "@/components/delete-slug-button"
 import { EditSlugDialog } from "@/components/edit-slug-dialog"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -32,203 +31,174 @@ export default async function DashboardPage() {
     redirect("/auth/login")
   }
 
-  const getUserInitials = () => {
-    if (user.email) {
-      return user.email.substring(0, 2).toUpperCase()
-    }
-    return "U"
-  }
-
   const totalSlugs = slugs?.length || 0
   const totalVisits = slugs?.reduce((sum, s) => sum + (s.visit_count || 0), 0) || 0
   
   const whatsappSlugs = slugs?.filter(s => s.type === "whatsapp") || []
   const linktreeSlugs = slugs?.filter(s => s.type === "linktree") || []
-  const pasteSlugs = slugs?.filter(s => s.type === "paste") || []
   const shorturlSlugs = slugs?.filter(s => s.type === "shorturl") || []
+  const pasteSlugs = slugs?.filter(s => s.type === "paste") || []
 
-  const hardBorder = "border-[3px] border-black"
-  const hardShadow = "shadow-[4px_4px_0_0_#111]"
+  const hardBorder = "border-[2.5px] border-black"
+  const hardShadow = "shadow-[3px_3px_0_0_#111]"
 
   return (
-    <div className="min-h-screen bg-[#F5F2EC] text-neutral-900 pb-16">
-      {/* Header */}
-      <header className={`sticky top-0 z-50 bg-[#F5F2EC]/90 backdrop-blur-md border-b-[3px] border-black`}>
-        <div className="max-w-6xl mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
-          <div className="flex items-center gap-2.5">
-            <div className={`w-9 h-9 rounded-xl bg-violet-600 ${hardBorder} flex items-center justify-center text-white text-base font-black shadow-[2px_2px_0_0_#111]`}>
+    <div className="min-h-screen bg-[#F5F2EC] text-neutral-900 pb-20">
+      
+      {/* Top Header */}
+      <header className={`sticky top-0 z-50 bg-[#F5F2EC]/95 backdrop-blur-md border-b-[3px] border-black`}>
+        <div className="max-w-5xl mx-auto flex h-14 items-center justify-between px-4 sm:px-6">
+          <div className="flex items-center gap-2">
+            <div className={`w-8 h-8 rounded-lg bg-violet-600 ${hardBorder} flex items-center justify-center text-white text-sm font-black shadow-[2px_2px_0_0_#111]`}>
               🚪
             </div>
-            <span className="text-[20px] font-black tracking-tight text-black">Door.id</span>
+            <span className="text-[18px] font-black tracking-tight text-black">Door.id</span>
           </div>
-          <div className="flex items-center gap-3">
-            <Button asChild size="sm" className={`bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl border-2 border-black shadow-[2px_2px_0_0_#111]`}>
+
+          <div className="flex items-center gap-2.5">
+            <span className="text-xs font-bold text-neutral-600 hidden sm:inline">{user.email}</span>
+            <Button asChild size="sm" className={`bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl border-2 border-black shadow-[2px_2px_0_0_#111] h-8 text-xs px-3`}>
               <Link href="/">
-                <Plus className="h-4 w-4 mr-1" /> Buat Link Baru
+                <Plus className="h-3.5 w-3.5 mr-1" /> Buat Link
               </Link>
             </Button>
             <form action={handleSignOut}>
-              <Button type="submit" size="sm" className={`bg-black text-white hover:bg-neutral-800 font-bold rounded-xl border-2 border-black shadow-[2px_2px_0_0_#111]`}>
-                Sign Out
+              <Button type="submit" size="sm" className={`bg-black text-white hover:bg-neutral-800 font-bold rounded-xl border-2 border-black shadow-[2px_2px_0_0_#111] h-8 text-xs px-3`}>
+                Keluar
               </Button>
             </form>
           </div>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto py-8 px-4 sm:px-6">
-        <div className="space-y-8">
-          
-          {/* Bento Grid Stats & Welcome */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      {/* Compact Top Stats Bar */}
+      <div className="bg-white border-b-2 border-black py-4 px-4 sm:px-6 mb-6">
+        <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-6">
+            <div>
+              <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">Total Tautan</p>
+              <p className="text-xl font-black">{totalSlugs}</p>
+            </div>
+            <div className="h-8 w-[2px] bg-neutral-200" />
+            <div>
+              <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">Total Kunjungan</p>
+              <p className="text-xl font-black text-violet-600">👁️ {totalVisits}</p>
+            </div>
+          </div>
+
+          <Button asChild className={`bg-yellow-300 hover:bg-yellow-400 text-black font-black text-xs rounded-xl ${hardBorder} ${hardShadow} h-9 px-4`}>
+            <Link href="/">✨ Buat & Kustomisasi Link Baru</Link>
+          </Button>
+        </div>
+      </div>
+
+      <main className="max-w-5xl mx-auto px-4 sm:px-6">
+        
+        {slugsError && (
+          <div className="rounded-xl bg-red-100 border-2 border-red-500 p-3 text-red-700 font-bold text-sm mb-6">
+            Error: {slugsError.message}
+          </div>
+        )}
+
+        {slugs && slugs.length === 0 && (
+          <div className={`rounded-2xl bg-white p-10 text-center ${hardBorder} ${hardShadow} my-12`}>
+            <div className="w-14 h-14 rounded-2xl bg-violet-100 border-2 border-black flex items-center justify-center mx-auto mb-3 shadow-[2px_2px_0_0_#111]">
+              <Link2 className="h-6 w-6 text-violet-600" />
+            </div>
+            <h3 className="text-lg font-black mb-1">Belum ada link dibuat</h3>
+            <p className="text-xs text-neutral-600 mb-5 font-medium max-w-xs mx-auto">Mulai buat link pertama Anda untuk WhatsApp, Short URL, atau Link Bio.</p>
+            <Button asChild className={`bg-black text-white hover:bg-neutral-800 font-bold rounded-xl ${hardBorder} ${hardShadow} px-5 py-2.5 text-xs`}>
+              <Link href="/"><Plus className="h-4 w-4 mr-1.5" /> Buat Link Pertama</Link>
+            </Button>
+          </div>
+        )}
+
+        {slugs && slugs.length > 0 && (
+          <div className="space-y-6">
             
-            {/* Welcome Card */}
-            <div className={`lg:col-span-7 rounded-[24px] bg-white p-6 sm:p-7 ${hardBorder} ${hardShadow} flex flex-col justify-between`}>
-              <div className="flex items-center gap-4 mb-6">
-                <Avatar className={`h-16 w-16 ${hardBorder} bg-yellow-300 text-black font-black text-xl shadow-[2px_2px_0_0_#111]`}>
-                  <AvatarFallback className="bg-yellow-300 text-black font-black">
-                    {getUserInitials()}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <h2 className="text-2xl font-black">Halo, Sobur 👋</h2>
-                  <div className="flex items-center gap-2 text-sm text-neutral-600 font-medium">
-                    <Mail className="h-4 w-4" />
-                    <span className="break-all">{user.email}</span>
+            {/* Sticky Floating Category Nav Bar */}
+            <div className="sticky top-16 z-40 bg-[#F5F2EC]/90 backdrop-blur-md py-3 -mx-4 px-4 sm:mx-0 sm:px-0">
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+                <a href="#section-whatsapp" className="px-3.5 py-1.5 rounded-xl bg-emerald-100 border-2 border-black font-black text-xs text-emerald-900 shadow-[2px_2px_0_0_#111] shrink-0 hover:translate-y-[-1px]">
+                  💬 WhatsApp ({whatsappSlugs.length})
+                </a>
+                <a href="#section-linktree" className="px-3.5 py-1.5 rounded-xl bg-blue-100 border-2 border-black font-black text-xs text-blue-900 shadow-[2px_2px_0_0_#111] shrink-0 hover:translate-y-[-1px]">
+                  🌐 Link Bio ({linktreeSlugs.length})
+                </a>
+                <a href="#section-shorturl" className="px-3.5 py-1.5 rounded-xl bg-amber-100 border-2 border-black font-black text-xs text-amber-900 shadow-[2px_2px_0_0_#111] shrink-0 hover:translate-y-[-1px]">
+                  🔗 Short URL ({shorturlSlugs.length})
+                </a>
+                <a href="#section-paste" className="px-3.5 py-1.5 rounded-xl bg-purple-100 border-2 border-black font-black text-xs text-purple-900 shadow-[2px_2px_0_0_#111] shrink-0 hover:translate-y-[-1px]">
+                  📄 Paste & Notes ({pasteSlugs.length})
+                </a>
+              </div>
+            </div>
+
+            {/* Sections */}
+            <div className="space-y-8">
+              {whatsappSlugs.length > 0 && (
+                <div id="section-whatsapp" className="space-y-2.5 pt-2">
+                  <h3 className="text-sm font-black uppercase tracking-wider text-neutral-500 flex items-center gap-2">
+                    💬 WhatsApp Links ({whatsappSlugs.length})
+                  </h3>
+                  <div className="space-y-2">
+                    {whatsappSlugs.map(slug => <SlugCompactRow key={slug.id} slug={slug} />)}
                   </div>
                 </div>
-              </div>
-              
-              <div className="flex items-center justify-between pt-4 border-t border-neutral-100">
-                <span className="text-xs font-bold text-neutral-500 uppercase tracking-wide">Status Akun</span>
-                <span className="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-black rounded-lg border-2 border-black shadow-[2px_2px_0_0_#111]">
-                  🟢 Pro Member / Free Forever
-                </span>
-              </div>
-            </div>
+              )}
 
-            {/* Bento Stat 1: Total Links */}
-            <div className={`lg:col-span-3 rounded-[24px] bg-violet-100 p-6 ${hardBorder} ${hardShadow} flex flex-col justify-between`}>
-              <div className="w-10 h-10 rounded-xl bg-white border-2 border-black flex items-center justify-center shadow-[2px_2px_0_0_#111]">
-                <Link2 className="h-5 w-5 text-violet-700" />
-              </div>
-              <div>
-                <p className="text-4xl font-black text-black">{totalSlugs}</p>
-                <p className="text-sm font-bold text-violet-900 mt-1">Total Tautan Aktif</p>
-              </div>
-            </div>
+              {linktreeSlugs.length > 0 && (
+                <div id="section-linktree" className="space-y-2.5 pt-2">
+                  <h3 className="text-sm font-black uppercase tracking-wider text-neutral-500 flex items-center gap-2">
+                    🌐 Link-in-Bio ({linktreeSlugs.length})
+                  </h3>
+                  <div className="space-y-2">
+                    {linktreeSlugs.map(slug => <SlugCompactRow key={slug.id} slug={slug} />)}
+                  </div>
+                </div>
+              )}
 
-            {/* Bento Stat 2: Total Visits */}
-            <div className={`lg:col-span-2 rounded-[24px] bg-emerald-100 p-6 ${hardBorder} ${hardShadow} flex flex-col justify-between`}>
-              <div className="w-10 h-10 rounded-xl bg-white border-2 border-black flex items-center justify-center shadow-[2px_2px_0_0_#111]">
-                <BarChart3 className="h-5 w-5 text-emerald-700" />
-              </div>
-              <div>
-                <p className="text-4xl font-black text-black">{totalVisits}</p>
-                <p className="text-sm font-bold text-emerald-900 mt-1">Total Views</p>
-              </div>
+              {shorturlSlugs.length > 0 && (
+                <div id="section-shorturl" className="space-y-2.5 pt-2">
+                  <h3 className="text-sm font-black uppercase tracking-wider text-neutral-500 flex items-center gap-2">
+                    🔗 Short URLs ({shorturlSlugs.length})
+                  </h3>
+                  <div className="space-y-2">
+                    {shorturlSlugs.map(slug => <SlugCompactRow key={slug.id} slug={slug} />)}
+                  </div>
+                </div>
+              )}
+
+              {pasteSlugs.length > 0 && (
+                <div id="section-paste" className="space-y-2.5 pt-2">
+                  <h3 className="text-sm font-black uppercase tracking-wider text-neutral-500 flex items-center gap-2">
+                    📄 Paste & Secure Notes ({pasteSlugs.length})
+                  </h3>
+                  <div className="space-y-2">
+                    {pasteSlugs.map(slug => <SlugCompactRow key={slug.id} slug={slug} />)}
+                  </div>
+                </div>
+              )}
             </div>
 
           </div>
+        )}
 
-          {slugsError && (
-            <div className="rounded-2xl bg-red-100 border-2 border-red-500 p-4 text-red-700 font-bold">
-              Error loading slugs: {slugsError.message}
-            </div>
-          )}
-
-          {slugs && slugs.length === 0 && (
-            <div className={`rounded-[24px] bg-white p-12 text-center ${hardBorder} ${hardShadow}`}>
-              <div className="w-16 h-16 rounded-2xl bg-violet-100 border-2 border-black flex items-center justify-center mx-auto mb-4 shadow-[3px_3px_0_0_#111]">
-                <Link2 className="h-8 w-8 text-violet-600" />
-              </div>
-              <h3 className="text-xl font-black mb-2">Belum ada link dibuat</h3>
-              <p className="text-sm text-neutral-600 mb-6 font-medium max-w-sm mx-auto">Buat link pertama kamu sekarang dan bagikan ke sosial media.</p>
-              <Button asChild className={`bg-black text-white hover:bg-neutral-800 font-bold rounded-xl ${hardBorder} ${hardShadow} px-6 py-3`}>
-                <Link href="/">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Buat Link Pertama
-                </Link>
-              </Button>
-            </div>
-          )}
-
-          {slugs && slugs.length > 0 && (
-            <div className="space-y-6">
-              
-              {/* Kategori / Section berdasarkan Tipe Link */}
-              <div className="space-y-8">
-                
-                {whatsappSlugs.length > 0 && (
-                  <CategorySection title="💬 WhatsApp Links" count={whatsappSlugs.length} slugs={whatsappSlugs} />
-                )}
-
-                {linktreeSlugs.length > 0 && (
-                  <CategorySection title="🌐 Link-in-Bio / Linktree" count={linktreeSlugs.length} slugs={linktreeSlugs} />
-                )}
-
-                {shorturlSlugs.length > 0 && (
-                  <CategorySection title="🔗 Short URLs" count={shorturlSlugs.length} slugs={shorturlSlugs} />
-                )}
-
-                {pasteSlugs.length > 0 && (
-                  <CategorySection title="📄 Paste & Secure Notes" count={pasteSlugs.length} slugs={pasteSlugs} />
-                )}
-
-              </div>
-
-            </div>
-          )}
-
-        </div>
       </main>
     </div>
   )
 }
 
-function CategorySection({ title, count, slugs }: { title: string; count: number; slugs: any[] }) {
-  const hardBorder = "border-[2px] border-black"
-  
-  return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-black text-black flex items-center gap-2">
-          {title} 
-          <span className="text-xs px-2.5 py-0.5 rounded-lg bg-white border-2 border-black font-black shadow-[2px_2px_0_0_#111]">
-            {count}
-          </span>
-        </h3>
-      </div>
-
-      <div className="space-y-3">
-        {slugs.map((slug) => (
-          <SlugRow key={slug.id} slug={slug} />
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function SlugRow({ slug }: { slug: any }) {
+function SlugCompactRow({ slug }: { slug: any }) {
   const hardBorder = "border-[2px] border-black"
 
   const getIcon = () => {
     switch (slug.type) {
-      case "whatsapp": return <MessageSquare className="h-4 w-4 text-emerald-600" />
-      case "paste": return <FileText className="h-4 w-4 text-purple-600" />
-      case "linktree": return <Users className="h-4 w-4 text-blue-600" />
-      case "shorturl": return <Link2 className="h-4 w-4 text-amber-600" />
-      default: return <Link2 className="h-4 w-4 text-violet-600" />
-    }
-  }
-
-  const getTypeBadgeColor = () => {
-    switch (slug.type) {
-      case "whatsapp": return "bg-emerald-100 text-emerald-800 border-emerald-400"
-      case "paste": return "bg-purple-100 text-purple-800 border-purple-400"
-      case "linktree": return "bg-blue-100 text-blue-800 border-blue-400"
-      case "shorturl": return "bg-amber-100 text-amber-800 border-amber-400"
-      default: return "bg-neutral-100 text-neutral-800 border-neutral-400"
+      case "whatsapp": return <MessageSquare className="h-3.5 w-3.5 text-emerald-700" />
+      case "paste": return <FileText className="h-3.5 w-3.5 text-purple-700" />
+      case "linktree": return <Users className="h-3.5 w-3.5 text-blue-700" />
+      case "shorturl": return <Link2 className="h-3.5 w-3.5 text-amber-700" />
+      default: return <Link2 className="h-3.5 w-3.5 text-violet-700" />
     }
   }
 
@@ -242,50 +212,41 @@ function SlugRow({ slug }: { slug: any }) {
     }
   }
 
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://door.id/${slug.slug}`
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=https://door.id/${slug.slug}`
 
   return (
-    <div className={`rounded-2xl bg-white p-3.5 sm:px-5 sm:py-4 ${hardBorder} shadow-[3px_3px_0_0_#111] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all hover:translate-x-[2px]`}>
+    <div className={`rounded-xl bg-white px-4 py-2.5 ${hardBorder} shadow-[2px_2px_0_0_#111] flex items-center justify-between gap-3 transition-all hover:translate-x-[1px]`}>
       
-      {/* Left: Icon, Slug, & Target */}
-      <div className="flex items-center gap-3.5 min-w-0 flex-1">
-        <div className={`p-2.5 rounded-xl bg-neutral-100 border-2 border-black shrink-0`}>
+      {/* Left: Icon & Slug */}
+      <div className="flex items-center gap-3 min-w-0 flex-1">
+        <div className={`p-1.5 rounded-lg bg-neutral-100 border border-black shrink-0`}>
           {getIcon()}
         </div>
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <a href={`/${slug.slug}`} target="_blank" className="font-black text-base text-black hover:text-violet-600 truncate">
-              door.id/{slug.slug}
-            </a>
-            <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-md border ${getTypeBadgeColor()} shrink-0`}>
-              {slug.type}
-            </span>
-          </div>
-          <p className="text-xs text-neutral-500 truncate font-medium mt-0.5">
-            {getTargetPreview()}
-          </p>
+        <div className="min-w-0 flex items-center gap-2.5">
+          <a href={`/${slug.slug}`} target="_blank" className="font-bold text-sm text-black hover:text-violet-600 truncate">
+            door.id/{slug.slug}
+          </a>
+          <span className="text-[11px] text-neutral-400 truncate hidden sm:inline font-medium">
+            ({getTargetPreview()})
+          </span>
         </div>
       </div>
 
-      {/* Middle: Views count & QR Thumbnail */}
-      <div className="flex items-center gap-4 self-end sm:self-center shrink-0">
-        <div className="text-right">
-          <p className="text-xs font-bold text-neutral-400 uppercase">Views</p>
-          <p className="text-sm font-black text-neutral-900">👁️ {slug.visit_count || 0}</p>
-        </div>
-
-        {/* Small QR Thumbnail */}
-        <div className="w-10 h-10 rounded-lg bg-white border-2 border-black p-0.5 shrink-0 overflow-hidden shadow-[2px_2px_0_0_#111]">
+      {/* Middle: Views & QR Thumbnail */}
+      <div className="flex items-center gap-3 shrink-0">
+        <span className="text-xs font-black text-neutral-700 bg-neutral-100 px-2 py-0.5 rounded-md border border-neutral-300">
+          👁️ {slug.visit_count || 0}
+        </span>
+        <div className="w-8 h-8 rounded-md bg-white border border-black p-0.5 shrink-0 overflow-hidden shadow-[1px_1px_0_0_#111]">
           <img src={qrUrl} alt="QR" className="w-full h-full object-contain" />
         </div>
       </div>
 
-      {/* Right: Quick Action Buttons */}
-      <div className="flex items-center gap-2 w-full sm:w-auto justify-end pt-2 sm:pt-0 border-t sm:border-t-0 border-neutral-100">
-        <Button asChild size="sm" className="bg-neutral-100 hover:bg-neutral-200 text-black font-bold text-xs h-9 px-3 rounded-xl border-2 border-black shadow-[2px_2px_0_0_#111]">
+      {/* Right: Actions */}
+      <div className="flex items-center gap-1.5 shrink-0">
+        <Button asChild size="sm" className="bg-neutral-100 hover:bg-neutral-200 text-black font-bold text-[11px] h-7 px-2.5 rounded-lg border border-black shadow-[1px_1px_0_0_#111]">
           <Link href={`/${slug.slug}`} target="_blank">
-            <ExternalLink className="h-3.5 w-3.5 mr-1" />
-            Buka
+            <ExternalLink className="h-3 w-3 mr-1" /> Buka
           </Link>
         </Button>
         <EditSlugDialog slug={slug} />
