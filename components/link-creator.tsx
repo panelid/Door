@@ -12,6 +12,7 @@ import {
   Sparkles,
 } from "lucide-react"
 import { useI18n } from "@/lib/i18n"
+import { useState as useStateReact } from "react"
 
 const LINK_TYPES = [
   { key: "whatsapp", label: "WhatsApp", icon: MessageCircle },
@@ -32,6 +33,9 @@ export default function CreateLinkFormPreview() {
   const [bioLinks, setBioLinks] = useState([{ label: "", url: "" }])
   const [longUrl, setLongUrl] = useState("")
   const [includeQr, setIncludeQr] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [result, setResult] = useState<{ slug: string; type: string } | null>(null)
+  const [error, setError] = useState("")
   const { lang } = useI18n()
 
   const previewSlug = slug.trim() || "my-link"
@@ -106,6 +110,43 @@ export default function CreateLinkFormPreview() {
     shorturl: t.btnShorturl,
   }
 
+  const handleGenerate = async () => {
+    if (!slug.trim()) return
+    setSubmitting(true)
+    setError("")
+    setResult(null)
+
+    try {
+      let data: any = {}
+      if (activeType === "whatsapp") {
+        data = { phone, message: waMessage }
+      } else if (activeType === "paste") {
+        data = { title: pasteTitle, content: pasteContent, password: pastePassword }
+      } else if (activeType === "linktree") {
+        data = { displayName, links: bioLinks.filter(l => l.label && l.url) }
+      } else if (activeType === "shorturl") {
+        data = { url: longUrl }
+      }
+
+      const res = await fetch("/api/slugs/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug: slug.trim(), type: activeType, data }),
+      })
+
+      const json = await res.json()
+      if (!res.ok) {
+        setError(json.error || "Gagal membuat link")
+      } else {
+        setResult({ slug: slug.trim(), type: activeType })
+      }
+    } catch (err: any) {
+      setError("Terjadi kesalahan jaringan")
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#F5F2EC] text-neutral-900 flex items-center justify-center py-10 px-4">
       <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
@@ -153,7 +194,44 @@ export default function CreateLinkFormPreview() {
             <div className="grid grid-cols-4 gap-1.5 mb-6">
               {LINK_TYPES.map(({ key, label, icon: Icon }) => {
                 const active = activeType === key
-                return (
+                const handleGenerate = async () => {
+    if (!slug.trim()) return
+    setSubmitting(true)
+    setError("")
+    setResult(null)
+
+    try {
+      let data: any = {}
+      if (activeType === "whatsapp") {
+        data = { phone, message: waMessage }
+      } else if (activeType === "paste") {
+        data = { title: pasteTitle, content: pasteContent, password: pastePassword }
+      } else if (activeType === "linktree") {
+        data = { displayName, links: bioLinks.filter(l => l.label && l.url) }
+      } else if (activeType === "shorturl") {
+        data = { url: longUrl }
+      }
+
+      const res = await fetch("/api/slugs/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug: slug.trim(), type: activeType, data }),
+      })
+
+      const json = await res.json()
+      if (!res.ok) {
+        setError(json.error || "Gagal membuat link")
+      } else {
+        setResult({ slug: slug.trim(), type: activeType })
+      }
+    } catch (err: any) {
+      setError("Terjadi kesalahan jaringan")
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
                   <button
                     key={key}
                     onClick={() => setActiveType(key)}
@@ -360,6 +438,30 @@ export default function CreateLinkFormPreview() {
               </p>
             </div>
 
+            {/* Error / Success Messages */}
+            {error && (
+              <div className="mb-4 p-3 rounded-xl bg-red-100 border-2 border-red-400 text-red-700 text-[13px] font-bold">
+                ❌ {error}
+              </div>
+            )}
+            {result && (
+              <div className="mb-4 p-4 rounded-xl bg-green-100 border-2 border-green-400 shadow-[3px_3px_0_0_#111]">
+                <p className="text-[13px] font-bold text-green-800 mb-2">✅ Link berhasil dibuat!</p>
+                <div className="flex items-center gap-2 bg-white rounded-lg border-2 border-black p-2">
+                  <span className="flex-1 text-[13px] font-bold text-violet-700 break-all">door.id/{result.slug}</span>
+                  <button
+                    onClick={() => navigator.clipboard.writeText(`https://door.id/${result.slug}`)}
+                    className="shrink-0 px-3 py-1.5 bg-black text-white text-[11px] font-bold rounded-lg border-2 border-black shadow-[2px_2px_0_0_#111] active:translate-x-[1px] active:translate-y-[1px]"
+                  >
+                    📋 Copy
+                  </button>
+                </div>
+                <a href="/dashboard" className="block mt-2 text-[12px] font-bold text-green-700 hover:underline">
+                  → Lihat di Dashboard
+                </a>
+              </div>
+            )}
+
             {/* QR Code Option Box - Large & Visible */}
             <div 
               onClick={() => setIncludeQr(!includeQr)}
@@ -402,9 +504,15 @@ export default function CreateLinkFormPreview() {
             </div>
 
             {/* Generate Button */}
-            <button className={`w-full flex items-center justify-center gap-2 rounded-xl ${hardBorder} ${hardShadow} bg-violet-600 hover:bg-violet-500 py-4 text-[15px] font-bold text-white active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all`}>
+            <button 
+              onClick={handleGenerate}
+              disabled={submitting || !slug.trim()}
+              className={`w-full flex items-center justify-center gap-2 rounded-xl ${hardBorder} ${hardShadow} py-4 text-[15px] font-bold text-white active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                submitting ? "bg-neutral-500" : "bg-violet-600 hover:bg-violet-500"
+              }`}
+            >
               <Sparkles className="w-4 h-4" />
-              {ctaButtonLabels[activeType]}
+              {submitting ? "Membuat link..." : ctaButtonLabels[activeType]}
             </button>
 
             {/* QR Code Preview Box - Appears after generation (placeholder for now) */}
