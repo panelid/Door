@@ -2,30 +2,20 @@ import Link from "next/link"
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
-
   return (
-    <footer className="bg-white border-t border-[#E7E5F0]">
-      <div className="max-w-[430px] mx-auto px-4 py-6">
-        <div className="flex flex-col items-center gap-3 text-center">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-600 to-pink-500 flex items-center justify-center text-white text-xs flex-shrink-0">
-              🚪
-            </div>
-            <span className="text-sm font-bold bg-gradient-to-r from-violet-600 to-pink-500 bg-clip-text text-transparent">
-              Door.id
-            </span>
-          </Link>
-          <p className="text-xs text-[#767489]">
-            Platform link management all-in-one untuk Indonesia.
-          </p>
-          <div className="flex items-center gap-4 text-xs text-[#767489]">
-            <Link href="/privacy" className="hover:text-violet-600 transition-colors">Privasi</Link>
-            <Link href="/terms" className="hover:text-violet-600 transition-colors">Syarat</Link>
-            <Link href="/contact" className="hover:text-violet-600 transition-colors">Kontak</Link>
+    <footer className="border-t border-white/5 bg-[#0A0A0F]">
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-600 to-pink-500 flex items-center justify-center text-white text-xs">🚪</div>
+            <span className="text-sm font-bold bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent">Door.id</span>
           </div>
-          <p className="text-xs text-[#767489]">
-            © {currentYear} Door.id
-          </p>
+          <div className="flex items-center gap-5 text-xs text-gray-500">
+            <Link href="/privacy" className="hover:text-white transition-colors">Privasi</Link>
+            <Link href="/terms" className="hover:text-white transition-colors">Syarat</Link>
+            <Link href="/contact" className="hover:text-white transition-colors">Kontak</Link>
+          </div>
+          <p className="text-xs text-gray-600">© {currentYear} Door.id. All rights reserved.</p>
         </div>
       </div>
     </footer>
