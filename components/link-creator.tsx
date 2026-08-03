@@ -100,274 +100,266 @@ export default function CreateLinkFormPreview() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F2EC] text-neutral-900 flex justify-center">
-      <div className="w-full max-w-[480px] px-4 py-10">
+    <div className="min-h-screen bg-[#F5F2EC] text-neutral-900 flex items-center justify-center py-10 px-4">
+      <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
 
-        {/* Badge */}
-        <div className={`inline-flex items-center gap-2 ${hardBorder} bg-white px-3.5 py-1.5 mb-6 shadow-[3px_3px_0_0_#111]`}>
-          <span className="text-lg leading-none">🚪</span>
-          <span className="text-[11px] font-extrabold tracking-widest uppercase">
-            {t.badge}
-          </span>
-        </div>
-
-        {/* Headline */}
-        <h1 className="text-[36px] leading-[1.1] font-black mb-4">
-          {t.h1_1}
-          <br />
-          <span className="bg-violet-600 text-white px-2 py-0.5 inline-block rotate-[-1deg]">{t.h1_2}</span>
-          <br />
-          {t.h1_3}
-        </h1>
-
-        <p className="text-[15.5px] text-neutral-700 mb-2 leading-relaxed font-medium">
-          {t.desc1}
-        </p>
-        <p className="text-[15px] font-bold text-neutral-900 mb-8 leading-relaxed">
-          {t.desc2}
-        </p>
-
-        {/* CTA row */}
-        <div className="flex gap-3 mb-3">
-          <button
-            className={`flex-1 flex items-center justify-center gap-2 ${hardBorder} ${hardShadow} bg-black text-white font-bold py-3.5 text-[14.5px] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all rounded-xl`}
-          >
-            {t.ctaBtn} <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
-        <p className="text-[12px] text-neutral-500 mb-10 font-medium">
-          {t.subCta}
-        </p>
-
-        {/* Form card */}
-        <div className={`rounded-[28px] bg-white p-6 md:p-7 ${hardBorder} ${hardShadow}`}>
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-pink-100 px-3 py-1 mb-5 border border-pink-300">
-            <Sparkles className="w-3.5 h-3.5 text-pink-600" />
-            <span className="text-[11px] font-bold tracking-wide uppercase text-pink-700">
-              {t.tryNow}
+        {/* Kolom Kiri: Headline & Penjelasan (Lebih luas di Desktop) */}
+        <div className="lg:col-span-6 text-left">
+          <div className={`inline-flex items-center gap-2 ${hardBorder} bg-white px-3.5 py-1.5 mb-6 shadow-[3px_3px_0_0_#111]`}>
+            <span className="text-lg leading-none">🚪</span>
+            <span className="text-[11px] font-extrabold tracking-widest uppercase">
+              {t.badge}
             </span>
           </div>
 
-          {/* Tabs */}
-          <div className="grid grid-cols-4 gap-1.5 mb-6">
-            {LINK_TYPES.map(({ key, label, icon: Icon }) => {
-              const active = activeType === key
-              return (
-                <button
-                  key={key}
-                  onClick={() => setActiveType(key)}
-                  className={`flex flex-col items-center gap-1.5 py-3 px-1 rounded-2xl text-[11px] font-bold transition-all ${
-                    active
-                      ? "bg-violet-600 text-white shadow-md shadow-violet-200 scale-105"
-                      : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
-                  }`}
-                >
-                  <Icon className="w-[18px] h-[18px]" />
-                  {label}
-                </button>
-              )
-            })}
-          </div>
+          <h1 className="text-[40px] sm:text-[50px] lg:text-[56px] leading-[1.08] font-black mb-6">
+            {t.h1_1}
+            <br />
+            <span className="bg-violet-600 text-white px-3 py-1 inline-block rotate-[-1deg] shadow-[4px_4px_0_0_#111]">{t.h1_2}</span>
+            <br />
+            {t.h1_3}
+          </h1>
 
-          {/* Nama link */}
-          {activeType !== "linktree" && (
-            <div className="mb-4">
-              <label className="block text-[14px] font-bold text-neutral-800 mb-1.5">
-                {t.linkName}
-              </label>
-              <div className="flex rounded-xl border-2 border-black overflow-hidden bg-neutral-50 focus-within:ring-2 focus-within:ring-violet-400">
-                <span className="flex items-center bg-neutral-200 border-r-2 border-black px-3.5 text-[14px] font-semibold text-neutral-600">
-                  door.id/
-                </span>
-                <input
-                  value={slug}
-                  onChange={(e) => setSlug(e.target.value)}
-                  placeholder="my-link"
-                  className="flex-1 min-w-0 px-3.5 py-3 text-[14.5px] bg-white outline-none"
-                />
-              </div>
+          <p className="text-[17px] text-neutral-700 mb-3 leading-relaxed font-medium">
+            {t.desc1}
+          </p>
+          <p className="text-[16px] font-bold text-neutral-900 mb-8 leading-relaxed">
+            {t.desc2}
+          </p>
+
+          <p className="text-[13px] text-neutral-500 font-medium">
+            {t.subCta}
+          </p>
+        </div>
+
+        {/* Kolom Kanan: Form Card Neobrutalism (Proporsional di Desktop) */}
+        <div className="lg:col-span-6 w-full max-w-[500px] mx-auto lg:max-w-none">
+          <div className={`rounded-[28px] bg-white p-6 sm:p-8 ${hardBorder} ${hardShadow}`}>
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-pink-100 px-3 py-1 mb-5 border border-pink-300">
+              <Sparkles className="w-3.5 h-3.5 text-pink-600" />
+              <span className="text-[11px] font-bold tracking-wide uppercase text-pink-700">
+                {t.tryNow}
+              </span>
             </div>
-          )}
 
-          {/* WhatsApp */}
-          {activeType === "whatsapp" && (
-            <>
-              <div className="mb-4">
-                <label className="block text-[14px] font-bold text-neutral-800 mb-1.5">
-                  {t.whatsappNum}
-                </label>
-                <div className="flex items-center gap-2 rounded-xl border-2 border-black bg-white px-3.5">
-                  <MessageCircle className="w-[18px] h-[18px] shrink-0 text-[#25D366]" />
-                  <input
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="628123456789"
-                    className="flex-1 min-w-0 py-3 text-[14.5px] outline-none bg-transparent"
-                  />
-                </div>
-                <p className="text-[11.5px] text-neutral-500 mt-1">{t.whatsappHint}</p>
-              </div>
-              <div className="mb-5">
-                <label className="block text-[14px] font-bold text-neutral-800 mb-1.5">
-                  {t.defaultMsg}
-                </label>
-                <textarea
-                  value={waMessage}
-                  onChange={(e) => setWaMessage(e.target.value)}
-                  placeholder={t.defaultMsgPh}
-                  className={`${softInput} min-h-[70px] resize-none`}
-                />
-              </div>
-            </>
-          )}
+            {/* Tabs */}
+            <div className="grid grid-cols-4 gap-1.5 mb-6">
+              {LINK_TYPES.map(({ key, label, icon: Icon }) => {
+                const active = activeType === key
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setActiveType(key)}
+                    className={`flex flex-col items-center gap-1.5 py-3 px-1 rounded-2xl text-[11px] sm:text-[12px] font-bold transition-all ${
+                      active
+                        ? "bg-violet-600 text-white shadow-md shadow-violet-200 scale-105"
+                        : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+                    }`}
+                  >
+                    <Icon className="w-[18px] h-[18px]" />
+                    {label}
+                  </button>
+                )
+              })}
+            </div>
 
-          {/* Paste */}
-          {activeType === "paste" && (
-            <>
+            {/* Nama link */}
+            {activeType !== "linktree" && (
               <div className="mb-4">
                 <label className="block text-[14px] font-bold text-neutral-800 mb-1.5">
-                  {t.titleLabel}
+                  {t.linkName}
                 </label>
-                <input
-                  value={pasteTitle}
-                  onChange={(e) => setPasteTitle(e.target.value)}
-                  placeholder={t.titlePh}
-                  className={softInput}
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-[14px] font-bold text-neutral-800 mb-1.5">
-                  {t.textCont}
-                </label>
-                <textarea
-                  value={pasteContent}
-                  onChange={(e) => setPasteContent(e.target.value)}
-                  placeholder={t.textPh}
-                  className={`${softInput} min-h-[100px] resize-none`}
-                />
-              </div>
-              <div className="mb-5">
-                <label className="block text-[14px] font-bold text-neutral-800 mb-1.5">
-                  {t.passLabel}
-                </label>
-                <input
-                  type="password"
-                  value={pastePassword}
-                  onChange={(e) => setPastePassword(e.target.value)}
-                  placeholder={t.passPh}
-                  className={softInput}
-                />
-              </div>
-            </>
-          )}
-
-          {/* Linktree */}
-          {activeType === "linktree" && (
-            <>
-              <div className="mb-4">
-                <label className="block text-[14px] font-bold text-neutral-800 mb-1.5">
-                  {t.bioUser}
-                </label>
-                <div className="flex rounded-xl border-2 border-black overflow-hidden bg-neutral-50">
+                <div className="flex rounded-xl border-2 border-black overflow-hidden bg-neutral-50 focus-within:ring-2 focus-within:ring-violet-400">
                   <span className="flex items-center bg-neutral-200 border-r-2 border-black px-3.5 text-[14px] font-semibold text-neutral-600">
                     door.id/
                   </span>
                   <input
                     value={slug}
                     onChange={(e) => setSlug(e.target.value)}
-                    placeholder="username"
+                    placeholder="my-link"
                     className="flex-1 min-w-0 px-3.5 py-3 text-[14.5px] bg-white outline-none"
                   />
                 </div>
               </div>
-              <div className="mb-4">
+            )}
+
+            {/* WhatsApp */}
+            {activeType === "whatsapp" && (
+              <>
+                <div className="mb-4">
+                  <label className="block text-[14px] font-bold text-neutral-800 mb-1.5">
+                    {t.whatsappNum}
+                  </label>
+                  <div className="flex items-center gap-2 rounded-xl border-2 border-black bg-white px-3.5">
+                    <MessageCircle className="w-[18px] h-[18px] shrink-0 text-[#25D366]" />
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="628123456789"
+                      className="flex-1 min-w-0 py-3 text-[14.5px] outline-none bg-transparent"
+                    />
+                  </div>
+                  <p className="text-[11.5px] text-neutral-500 mt-1">{t.whatsappHint}</p>
+                </div>
+                <div className="mb-5">
+                  <label className="block text-[14px] font-bold text-neutral-800 mb-1.5">
+                    {t.defaultMsg}
+                  </label>
+                  <textarea
+                    value={waMessage}
+                    onChange={(e) => setWaMessage(e.target.value)}
+                    placeholder={t.defaultMsgPh}
+                    className={`${softInput} min-h-[70px] resize-none`}
+                  />
+                </div>
+              </>
+            )}
+
+            {/* Paste */}
+            {activeType === "paste" && (
+              <>
+                <div className="mb-4">
+                  <label className="block text-[14px] font-bold text-neutral-800 mb-1.5">
+                    {t.titleLabel}
+                  </label>
+                  <input
+                    value={pasteTitle}
+                    onChange={(e) => setPasteTitle(e.target.value)}
+                    placeholder={t.titlePh}
+                    className={softInput}
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-[14px] font-bold text-neutral-800 mb-1.5">
+                    {t.textCont}
+                  </label>
+                  <textarea
+                    value={pasteContent}
+                    onChange={(e) => setPasteContent(e.target.value)}
+                    placeholder={t.textPh}
+                    className={`${softInput} min-h-[100px] resize-none`}
+                  />
+                </div>
+                <div className="mb-5">
+                  <label className="block text-[14px] font-bold text-neutral-800 mb-1.5">
+                    {t.passLabel}
+                  </label>
+                  <input
+                    type="password"
+                    value={pastePassword}
+                    onChange={(e) => setPastePassword(e.target.value)}
+                    placeholder={t.passPh}
+                    className={softInput}
+                  />
+                </div>
+              </>
+            )}
+
+            {/* Linktree */}
+            {activeType === "linktree" && (
+              <>
+                <div className="mb-4">
+                  <label className="block text-[14px] font-bold text-neutral-800 mb-1.5">
+                    {t.bioUser}
+                  </label>
+                  <div className="flex rounded-xl border-2 border-black overflow-hidden bg-neutral-50">
+                    <span className="flex items-center bg-neutral-200 border-r-2 border-black px-3.5 text-[14px] font-semibold text-neutral-600">
+                      door.id/
+                    </span>
+                    <input
+                      value={slug}
+                      onChange={(e) => setSlug(e.target.value)}
+                      placeholder="username"
+                      className="flex-1 min-w-0 px-3.5 py-3 text-[14.5px] bg-white outline-none"
+                    />
+                  </div>
+                </div>
+                <div className="mb-4">
+                  <label className="block text-[14px] font-bold text-neutral-800 mb-1.5">
+                    {t.bioName}
+                  </label>
+                  <input
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    placeholder={t.bioNamePh}
+                    className={softInput}
+                  />
+                </div>
+                <div className="mb-5">
+                  <label className="block text-[14px] font-bold text-neutral-800 mb-2">
+                    {t.bioList}
+                  </label>
+                  <div className="space-y-2">
+                    {bioLinks.map((link, i) => (
+                      <div key={i} className="flex gap-2">
+                        <input
+                          value={link.label}
+                          onChange={(e) => updateBioLink(i, "label", e.target.value)}
+                          placeholder="Judul"
+                          className="flex-1 min-w-0 rounded-xl border border-neutral-300 px-3 py-2.5 text-[13.5px] bg-white outline-none"
+                        />
+                        <input
+                          value={link.url}
+                          onChange={(e) => updateBioLink(i, "url", e.target.value)}
+                          placeholder="https://..."
+                          className="flex-[1.4] min-w-0 rounded-xl border border-neutral-300 px-3 py-2.5 text-[13.5px] bg-white outline-none"
+                        />
+                        {bioLinks.length > 1 && (
+                          <button
+                            onClick={() => removeBioLink(i)}
+                            className="shrink-0 rounded-xl border border-neutral-300 px-2.5 text-neutral-500 hover:bg-neutral-100"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <button
+                    onClick={addBioLink}
+                    className="flex items-center gap-1.5 text-[13.5px] font-bold text-violet-600 mt-2.5 hover:underline"
+                  >
+                    <Plus className="w-4 h-4" /> {t.addLink}
+                  </button>
+                </div>
+              </>
+            )}
+
+            {/* Short URL */}
+            {activeType === "shorturl" && (
+              <div className="mb-5">
                 <label className="block text-[14px] font-bold text-neutral-800 mb-1.5">
-                  {t.bioName}
+                  {t.targetUrl}
                 </label>
                 <input
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder={t.bioNamePh}
+                  value={longUrl}
+                  onChange={(e) => setLongUrl(e.target.value)}
+                  placeholder="https://url-panjang-kamu.com/artikel"
                   className={softInput}
                 />
               </div>
-              <div className="mb-5">
-                <label className="block text-[14px] font-bold text-neutral-800 mb-2">
-                  {t.bioList}
-                </label>
-                <div className="space-y-2">
-                  {bioLinks.map((link, i) => (
-                    <div key={i} className="flex gap-2">
-                      <input
-                        value={link.label}
-                        onChange={(e) => updateBioLink(i, "label", e.target.value)}
-                        placeholder="Judul"
-                        className="flex-1 min-w-0 rounded-xl border border-neutral-300 px-3 py-2.5 text-[13.5px] bg-white outline-none"
-                      />
-                      <input
-                        value={link.url}
-                        onChange={(e) => updateBioLink(i, "url", e.target.value)}
-                        placeholder="https://..."
-                        className="flex-[1.4] min-w-0 rounded-xl border border-neutral-300 px-3 py-2.5 text-[13.5px] bg-white outline-none"
-                      />
-                      {bioLinks.length > 1 && (
-                        <button
-                          onClick={() => removeBioLink(i)}
-                          className="shrink-0 rounded-xl border border-neutral-300 px-2.5 text-neutral-500 hover:bg-neutral-100"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                </div>
-                <button
-                  onClick={addBioLink}
-                  className="flex items-center gap-1.5 text-[13.5px] font-bold text-violet-600 mt-2.5 hover:underline"
-                >
-                  <Plus className="w-4 h-4" /> {t.addLink}
-                </button>
-              </div>
-            </>
-          )}
+            )}
 
-          {/* Short URL */}
-          {activeType === "shorturl" && (
-            <div className="mb-5">
-              <label className="block text-[14px] font-bold text-neutral-800 mb-1.5">
-                {t.targetUrl}
-              </label>
-              <input
-                value={longUrl}
-                onChange={(e) => setLongUrl(e.target.value)}
-                placeholder="https://url-panjang-kamu.com/artikel"
-                className={softInput}
-              />
+            {/* Preview */}
+            <div className="mb-5 rounded-2xl border-2 border-dashed border-violet-300 bg-violet-50/60 px-4 py-3.5">
+              <p className="text-[11px] uppercase tracking-wider font-bold text-neutral-500 mb-1">
+                {t.previewTitle}
+              </p>
+              <p className="flex flex-wrap items-center gap-1.5 text-[13px] font-bold break-all">
+                <span className="text-violet-700">door.id/{previewSlug}</span>
+                <span className="font-normal text-neutral-400">→</span>
+                <span className="text-emerald-700">{previewTarget}</span>
+              </p>
             </div>
-          )}
 
-          {/* Preview */}
-          <div className="mb-5 rounded-2xl border-2 border-dashed border-violet-300 bg-violet-50/60 px-4 py-3.5">
-            <p className="text-[11px] uppercase tracking-wider font-bold text-neutral-500 mb-1">
-              {t.previewTitle}
-            </p>
-            <p className="flex flex-wrap items-center gap-1.5 text-[13px] font-bold break-all">
-              <span className="text-violet-700">door.id/{previewSlug}</span>
-              <span className="font-normal text-neutral-400">→</span>
-              <span className="text-emerald-700">{previewTarget}</span>
-            </p>
+            <button className={`w-full flex items-center justify-center gap-2 rounded-xl ${hardBorder} ${hardShadow} bg-violet-600 hover:bg-violet-500 py-4 text-[15px] font-bold text-white active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all`}>
+              <Sparkles className="w-4 h-4" />
+              {ctaButtonLabels[activeType]}
+            </button>
           </div>
-
-          <button className={`w-full flex items-center justify-center gap-2 rounded-xl ${hardBorder} ${hardShadow} bg-violet-600 hover:bg-violet-500 py-4 text-[15px] font-bold text-white active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all`}>
-            <Sparkles className="w-4 h-4" />
-            {ctaButtonLabels[activeType]}
-          </button>
         </div>
 
-        <p className="text-center text-[12px] text-neutral-600 mt-6 font-medium">
-          {t.footerDesc}
-        </p>
       </div>
     </div>
   )
