@@ -2,7 +2,7 @@ import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { Link2, MessageSquare, FileText, Users, ExternalLink, Mail, Sparkles, BarChart3, Activity, Globe, Plus, Copy, QrCode, Trash2, Edit } from "lucide-react"
+import { Link2, MessageSquare, FileText, Users, ExternalLink, Mail, Sparkles, BarChart3, Activity, Globe, Plus, ArrowRight } from "lucide-react"
 import { DeleteSlugButton } from "@/components/delete-slug-button"
 import { EditSlugDialog } from "@/components/edit-slug-dialog"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -42,10 +42,10 @@ export default async function DashboardPage() {
   const totalSlugs = slugs?.length || 0
   const totalVisits = slugs?.reduce((sum, s) => sum + (s.visit_count || 0), 0) || 0
   
-  const whatsappCount = slugs?.filter(s => s.type === "whatsapp").length || 0
-  const linktreeCount = slugs?.filter(s => s.type === "linktree").length || 0
-  const pasteCount = slugs?.filter(s => s.type === "paste").length || 0
-  const shorturlCount = slugs?.filter(s => s.type === "shorturl").length || 0
+  const whatsappSlugs = slugs?.filter(s => s.type === "whatsapp") || []
+  const linktreeSlugs = slugs?.filter(s => s.type === "linktree") || []
+  const pasteSlugs = slugs?.filter(s => s.type === "paste") || []
+  const shorturlSlugs = slugs?.filter(s => s.type === "shorturl") || []
 
   const hardBorder = "border-[3px] border-black"
   const hardShadow = "shadow-[4px_4px_0_0_#111]"
@@ -79,34 +79,56 @@ export default async function DashboardPage() {
       <main className="max-w-6xl mx-auto py-8 px-4 sm:px-6">
         <div className="space-y-8">
           
-          {/* Welcome & Quick Stats */}
-          <div className={`rounded-[24px] bg-white p-6 sm:p-7 ${hardBorder} ${hardShadow} flex flex-col md:flex-row items-start md:items-center justify-between gap-6`}>
-            <div className="flex items-center gap-4">
-              <Avatar className={`h-16 w-16 ${hardBorder} bg-yellow-300 text-black font-black text-xl shadow-[2px_2px_0_0_#111]`}>
-                <AvatarFallback className="bg-yellow-300 text-black font-black">
-                  {getUserInitials()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="space-y-1">
-                <h2 className="text-2xl font-black">Command Center</h2>
-                <div className="flex items-center gap-2 text-sm text-neutral-600 font-medium">
-                  <Mail className="h-4 w-4" />
-                  <span className="break-all">{user.email}</span>
+          {/* Bento Grid Stats & Welcome */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+            
+            {/* Welcome Card */}
+            <div className={`lg:col-span-7 rounded-[24px] bg-white p-6 sm:p-7 ${hardBorder} ${hardShadow} flex flex-col justify-between`}>
+              <div className="flex items-center gap-4 mb-6">
+                <Avatar className={`h-16 w-16 ${hardBorder} bg-yellow-300 text-black font-black text-xl shadow-[2px_2px_0_0_#111]`}>
+                  <AvatarFallback className="bg-yellow-300 text-black font-black">
+                    {getUserInitials()}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <h2 className="text-2xl font-black">Halo, Sobur 👋</h2>
+                  <div className="flex items-center gap-2 text-sm text-neutral-600 font-medium">
+                    <Mail className="h-4 w-4" />
+                    <span className="break-all">{user.email}</span>
+                  </div>
                 </div>
+              </div>
+              
+              <div className="flex items-center justify-between pt-4 border-t border-neutral-100">
+                <span className="text-xs font-bold text-neutral-500 uppercase tracking-wide">Status Akun</span>
+                <span className="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-black rounded-lg border-2 border-black shadow-[2px_2px_0_0_#111]">
+                  🟢 Pro Member / Free Forever
+                </span>
               </div>
             </div>
 
-            {/* Mini Stats inside welcome */}
-            <div className="flex gap-3 w-full md:w-auto">
-              <div className={`flex-1 md:flex-initial px-4 py-3 rounded-xl bg-violet-100 border-2 border-black shadow-[2px_2px_0_0_#111] text-center`}>
-                <p className="text-2xl font-black text-violet-900">{totalSlugs}</p>
-                <p className="text-xs font-bold text-violet-700 uppercase">Total Links</p>
+            {/* Bento Stat 1: Total Links */}
+            <div className={`lg:col-span-3 rounded-[24px] bg-violet-100 p-6 ${hardBorder} ${hardShadow} flex flex-col justify-between`}>
+              <div className="w-10 h-10 rounded-xl bg-white border-2 border-black flex items-center justify-center shadow-[2px_2px_0_0_#111]">
+                <Link2 className="h-5 w-5 text-violet-700" />
               </div>
-              <div className={`flex-1 md:flex-initial px-4 py-3 rounded-xl bg-emerald-100 border-2 border-black shadow-[2px_2px_0_0_#111] text-center`}>
-                <p className="text-2xl font-black text-emerald-900">{totalVisits}</p>
-                <p className="text-xs font-bold text-emerald-700 uppercase">Total Visits</p>
+              <div>
+                <p className="text-4xl font-black text-black">{totalSlugs}</p>
+                <p className="text-sm font-bold text-violet-900 mt-1">Total Tautan Aktif</p>
               </div>
             </div>
+
+            {/* Bento Stat 2: Total Visits */}
+            <div className={`lg:col-span-2 rounded-[24px] bg-emerald-100 p-6 ${hardBorder} ${hardShadow} flex flex-col justify-between`}>
+              <div className="w-10 h-10 rounded-xl bg-white border-2 border-black flex items-center justify-center shadow-[2px_2px_0_0_#111]">
+                <BarChart3 className="h-5 w-5 text-emerald-700" />
+              </div>
+              <div>
+                <p className="text-4xl font-black text-black">{totalVisits}</p>
+                <p className="text-sm font-bold text-emerald-900 mt-1">Total Views</p>
+              </div>
+            </div>
+
           </div>
 
           {slugsError && (
@@ -132,25 +154,57 @@ export default async function DashboardPage() {
           )}
 
           {slugs && slugs.length > 0 && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xl font-black text-black">Daftar Tautan Aktif</h3>
-                <span className="text-xs font-bold bg-neutral-200 px-3 py-1 rounded-lg border border-black">
-                  Compact View
-                </span>
+            <div className="space-y-6">
+              
+              {/* Kategori / Section berdasarkan Tipe Link */}
+              <div className="space-y-8">
+                
+                {whatsappSlugs.length > 0 && (
+                  <CategorySection title="💬 WhatsApp Links" count={whatsappSlugs.length} slugs={whatsappSlugs} />
+                )}
+
+                {linktreeSlugs.length > 0 && (
+                  <CategorySection title="🌐 Link-in-Bio / Linktree" count={linktreeSlugs.length} slugs={linktreeSlugs} />
+                )}
+
+                {shorturlSlugs.length > 0 && (
+                  <CategorySection title="🔗 Short URLs" count={shorturlSlugs.length} slugs={shorturlSlugs} />
+                )}
+
+                {pasteSlugs.length > 0 && (
+                  <CategorySection title="📄 Paste & Secure Notes" count={pasteSlugs.length} slugs={pasteSlugs} />
+                )}
+
               </div>
 
-              {/* Compact Rows List */}
-              <div className="space-y-3">
-                {slugs.map((slug) => (
-                  <SlugRow key={slug.id} slug={slug} />
-                ))}
-              </div>
             </div>
           )}
 
         </div>
       </main>
+    </div>
+  )
+}
+
+function CategorySection({ title, count, slugs }: { title: string; count: number; slugs: any[] }) {
+  const hardBorder = "border-[2px] border-black"
+  
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-black text-black flex items-center gap-2">
+          {title} 
+          <span className="text-xs px-2.5 py-0.5 rounded-lg bg-white border-2 border-black font-black shadow-[2px_2px_0_0_#111]">
+            {count}
+          </span>
+        </h3>
+      </div>
+
+      <div className="space-y-3">
+        {slugs.map((slug) => (
+          <SlugRow key={slug.id} slug={slug} />
+        ))}
+      </div>
     </div>
   )
 }
