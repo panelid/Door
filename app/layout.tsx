@@ -49,6 +49,14 @@ export const metadata: Metadata = {
     siteName: "Door.id",
     locale: "id_ID",
     type: "website",
+    images: [
+      {
+        url: "https://door.id/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Door.id - Link Management Indonesia",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -75,6 +83,25 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="id" className={`${plusJakartaSans.variable} ${jetbrainsMono.variable}`}>
       <body className="font-sans antialiased min-h-screen bg-[#F7F6FB] dark:bg-[#0a0a1a]">
         {children}
+      
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "Door.id",
+          "url": "https://door.id",
+          "description": "Platform link management all-in-one untuk Indonesia. Buat link WhatsApp, link-in-bio, dan short link.",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://door.id/?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        })
+      }}
+    />
+
       </body>
     </html>
   )
