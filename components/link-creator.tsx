@@ -20,13 +20,6 @@ const LINK_TYPES = [
   { key: "shorturl", label: "Short URL", icon: Link2 },
 ]
 
-const CTA_LABEL = {
-  whatsapp: "Buat Link WhatsApp",
-  paste: "Buat Paste",
-  linktree: "Buat Linktree",
-  shorturl: "Perpendek URL",
-}
-
 export default function CreateLinkFormPreview() {
   const [activeType, setActiveType] = useState("whatsapp")
   const [slug, setSlug] = useState("")
@@ -38,7 +31,7 @@ export default function CreateLinkFormPreview() {
   const [displayName, setDisplayName] = useState("")
   const [bioLinks, setBioLinks] = useState([{ label: "", url: "" }])
   const [longUrl, setLongUrl] = useState("")
-  const { t } = useI18n()
+  const { lang } = useI18n()
 
   const previewSlug = slug.trim() || "my-link"
   const previewTarget = (() => {
@@ -60,6 +53,52 @@ export default function CreateLinkFormPreview() {
   const softInput =
     "w-full rounded-xl border border-neutral-200 bg-white px-3.5 py-3 text-[14.5px] text-neutral-900 outline-none transition-all focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
 
+  const t = {
+    badge: lang === "id" ? "Multi-Link Platform · Gratis Selamanya" : "Multi-Link Platform · Free Forever",
+    h1_1: lang === "id" ? "Satu Pintu," : "One Door,",
+    h1_2: lang === "id" ? "Semua Link Kamu" : "All Your Links",
+    h1_3: lang === "id" ? "Nyantol Di Sini." : "Hang Right Here.",
+    desc1: lang === "id"
+      ? "Custom link WhatsApp, teks penting antar perangkat, bio sosial media, sampe URL panjang yang ribet — Door.id beresin semuanya jadi satu alamat pendek."
+      : "Custom WhatsApp links, cross-device text sharing, social media bio, and long messy URLs — Door.id packs it all into one short address.",
+    desc2: lang === "id"
+      ? "Gampang diinget. Gampang dibagi. Gampang dipake buat jualan atau kerja tim."
+      : "Easy to remember. Easy to share. Easy to use for selling or teamwork.",
+    ctaBtn: lang === "id" ? "Buat Link Gratis" : "Create Link For Free",
+    subCta: lang === "id" ? "✨ Ga perlu kartu kredit. Ga perlu install apa-apa." : "✨ No credit card needed. No installation required.",
+    tryNow: lang === "id" ? "Coba Sekarang" : "Try Now",
+    linkName: lang === "id" ? "Nama Link Kamu" : "Your Link Name",
+    whatsappNum: lang === "id" ? "Nomor WhatsApp" : "WhatsApp Number",
+    whatsappHint: lang === "id" ? "Contoh: 628123456789 (tanpa +)" : "Example: 628123456789 (without +)",
+    defaultMsg: lang === "id" ? "Pesan Default (opsional)" : "Default Message (optional)",
+    defaultMsgPh: lang === "id" ? "Halo, saya tertarik dengan..." : "Hi, I am interested in...",
+    titleLabel: lang === "id" ? "Judul (opsional)" : "Title (optional)",
+    titlePh: lang === "id" ? "Contoh: Catatan rapat" : "e.g. Meeting notes",
+    textCont: lang === "id" ? "Isi Teks" : "Text Content",
+    textPh: lang === "id" ? "Tulis atau tempel teks kamu..." : "Write or paste your text...",
+    passLabel: lang === "id" ? "Proteksi Password (opsional)" : "Password Protection (optional)",
+    passPh: lang === "id" ? "Kosongkan kalau tidak perlu" : "Leave blank if not needed",
+    bioUser: lang === "id" ? "Username Bio" : "Bio Username",
+    bioName: lang === "id" ? "Nama Tampilan" : "Display Name",
+    bioNamePh: lang === "id" ? "Nama atau Brand" : "Name or Brand",
+    bioList: lang === "id" ? "Daftar Link" : "Link List",
+    addLink: lang === "id" ? "Tambah Link" : "Add Link",
+    targetUrl: lang === "id" ? "URL Tujuan" : "Target URL",
+    previewTitle: lang === "id" ? "Preview link kamu" : "Your link preview",
+    footerDesc: lang === "id" ? "Dipakai buat jualan online, campaign, sampe katalog produk." : "Used for online selling, campaigns, and product catalogs.",
+    btnWhatsapp: lang === "id" ? "Buat Link WhatsApp" : "Create WhatsApp Link",
+    btnPaste: lang === "id" ? "Buat Paste" : "Create Paste",
+    btnLinktree: lang === "id" ? "Buat Linktree" : "Create Linktree",
+    btnShorturl: lang === "id" ? "Perpendek URL" : "Shorten URL",
+  }
+
+  const ctaButtonLabels: Record<string, string> = {
+    whatsapp: t.btnWhatsapp,
+    paste: t.btnPaste,
+    linktree: t.btnLinktree,
+    shorturl: t.btnShorturl,
+  }
+
   return (
     <div className="min-h-screen bg-[#F5F2EC] text-neutral-900 flex justify-center">
       <div className="w-full max-w-[480px] px-4 py-10">
@@ -68,25 +107,24 @@ export default function CreateLinkFormPreview() {
         <div className={`inline-flex items-center gap-2 ${hardBorder} bg-white px-3.5 py-1.5 mb-6 shadow-[3px_3px_0_0_#111]`}>
           <span className="text-lg leading-none">🚪</span>
           <span className="text-[11px] font-extrabold tracking-widest uppercase">
-            Multi-Link Platform · Gratis Selamanya
+            {t.badge}
           </span>
         </div>
 
         {/* Headline */}
         <h1 className="text-[36px] leading-[1.1] font-black mb-4">
-          Satu Pintu,
+          {t.h1_1}
           <br />
-          <span className="bg-violet-600 text-white px-2 py-0.5 inline-block rotate-[-1deg]">Semua Link Kamu</span>
+          <span className="bg-violet-600 text-white px-2 py-0.5 inline-block rotate-[-1deg]">{t.h1_2}</span>
           <br />
-          Nyantol Di Sini.
+          {t.h1_3}
         </h1>
 
         <p className="text-[15.5px] text-neutral-700 mb-2 leading-relaxed font-medium">
-          Custom link WhatsApp, teks penting antar perangkat, bio sosial media,
-          sampe URL panjang yang ribet — Door.id beresin semuanya jadi satu alamat pendek.
+          {t.desc1}
         </p>
         <p className="text-[15px] font-bold text-neutral-900 mb-8 leading-relaxed">
-          Gampang diinget. Gampang dibagi. Gampang dipake buat jualan atau kerja tim.
+          {t.desc2}
         </p>
 
         {/* CTA row */}
@@ -94,11 +132,11 @@ export default function CreateLinkFormPreview() {
           <button
             className={`flex-1 flex items-center justify-center gap-2 ${hardBorder} ${hardShadow} bg-black text-white font-bold py-3.5 text-[14.5px] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all rounded-xl`}
           >
-            Buat Link Gratis <ArrowRight className="w-4 h-4" />
+            {t.ctaBtn} <ArrowRight className="w-4 h-4" />
           </button>
         </div>
         <p className="text-[12px] text-neutral-500 mb-10 font-medium">
-          ✨ Ga perlu kartu kredit. Ga perlu install apa-apa.
+          {t.subCta}
         </p>
 
         {/* Form card */}
@@ -106,7 +144,7 @@ export default function CreateLinkFormPreview() {
           <div className="inline-flex items-center gap-1.5 rounded-full bg-pink-100 px-3 py-1 mb-5 border border-pink-300">
             <Sparkles className="w-3.5 h-3.5 text-pink-600" />
             <span className="text-[11px] font-bold tracking-wide uppercase text-pink-700">
-              Coba Sekarang
+              {t.tryNow}
             </span>
           </div>
 
@@ -135,7 +173,7 @@ export default function CreateLinkFormPreview() {
           {activeType !== "linktree" && (
             <div className="mb-4">
               <label className="block text-[14px] font-bold text-neutral-800 mb-1.5">
-                Nama Link Kamu
+                {t.linkName}
               </label>
               <div className="flex rounded-xl border-2 border-black overflow-hidden bg-neutral-50 focus-within:ring-2 focus-within:ring-violet-400">
                 <span className="flex items-center bg-neutral-200 border-r-2 border-black px-3.5 text-[14px] font-semibold text-neutral-600">
@@ -156,7 +194,7 @@ export default function CreateLinkFormPreview() {
             <>
               <div className="mb-4">
                 <label className="block text-[14px] font-bold text-neutral-800 mb-1.5">
-                  Nomor WhatsApp
+                  {t.whatsappNum}
                 </label>
                 <div className="flex items-center gap-2 rounded-xl border-2 border-black bg-white px-3.5">
                   <MessageCircle className="w-[18px] h-[18px] shrink-0 text-[#25D366]" />
@@ -168,16 +206,16 @@ export default function CreateLinkFormPreview() {
                     className="flex-1 min-w-0 py-3 text-[14.5px] outline-none bg-transparent"
                   />
                 </div>
-                <p className="text-[11.5px] text-neutral-500 mt-1">Contoh: 628123456789 (tanpa +)</p>
+                <p className="text-[11.5px] text-neutral-500 mt-1">{t.whatsappHint}</p>
               </div>
               <div className="mb-5">
                 <label className="block text-[14px] font-bold text-neutral-800 mb-1.5">
-                  Pesan Default <span className="font-normal text-neutral-400">(opsional)</span>
+                  {t.defaultMsg}
                 </label>
                 <textarea
                   value={waMessage}
                   onChange={(e) => setWaMessage(e.target.value)}
-                  placeholder="Halo, saya tertarik dengan..."
+                  placeholder={t.defaultMsgPh}
                   className={`${softInput} min-h-[70px] resize-none`}
                 />
               </div>
@@ -189,35 +227,35 @@ export default function CreateLinkFormPreview() {
             <>
               <div className="mb-4">
                 <label className="block text-[14px] font-bold text-neutral-800 mb-1.5">
-                  Judul <span className="font-normal text-neutral-400">(opsional)</span>
+                  {t.titleLabel}
                 </label>
                 <input
                   value={pasteTitle}
                   onChange={(e) => setPasteTitle(e.target.value)}
-                  placeholder="Contoh: Catatan rapat"
+                  placeholder={t.titlePh}
                   className={softInput}
                 />
               </div>
               <div className="mb-4">
                 <label className="block text-[14px] font-bold text-neutral-800 mb-1.5">
-                  Isi Teks
+                  {t.textCont}
                 </label>
                 <textarea
                   value={pasteContent}
                   onChange={(e) => setPasteContent(e.target.value)}
-                  placeholder="Tulis atau tempel teks kamu..."
+                  placeholder={t.textPh}
                   className={`${softInput} min-h-[100px] resize-none`}
                 />
               </div>
               <div className="mb-5">
                 <label className="block text-[14px] font-bold text-neutral-800 mb-1.5">
-                  Proteksi Password <span className="font-normal text-neutral-400">(opsional)</span>
+                  {t.passLabel}
                 </label>
                 <input
                   type="password"
                   value={pastePassword}
                   onChange={(e) => setPastePassword(e.target.value)}
-                  placeholder="Kosongkan kalau tidak perlu"
+                  placeholder={t.passPh}
                   className={softInput}
                 />
               </div>
@@ -229,7 +267,7 @@ export default function CreateLinkFormPreview() {
             <>
               <div className="mb-4">
                 <label className="block text-[14px] font-bold text-neutral-800 mb-1.5">
-                  Username Bio
+                  {t.bioUser}
                 </label>
                 <div className="flex rounded-xl border-2 border-black overflow-hidden bg-neutral-50">
                   <span className="flex items-center bg-neutral-200 border-r-2 border-black px-3.5 text-[14px] font-semibold text-neutral-600">
@@ -245,18 +283,18 @@ export default function CreateLinkFormPreview() {
               </div>
               <div className="mb-4">
                 <label className="block text-[14px] font-bold text-neutral-800 mb-1.5">
-                  Nama Tampilan
+                  {t.bioName}
                 </label>
                 <input
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="Nama atau Brand"
+                  placeholder={t.bioNamePh}
                   className={softInput}
                 />
               </div>
               <div className="mb-5">
                 <label className="block text-[14px] font-bold text-neutral-800 mb-2">
-                  Daftar Link
+                  {t.bioList}
                 </label>
                 <div className="space-y-2">
                   {bioLinks.map((link, i) => (
@@ -288,7 +326,7 @@ export default function CreateLinkFormPreview() {
                   onClick={addBioLink}
                   className="flex items-center gap-1.5 text-[13.5px] font-bold text-violet-600 mt-2.5 hover:underline"
                 >
-                  <Plus className="w-4 h-4" /> Tambah Link
+                  <Plus className="w-4 h-4" /> {t.addLink}
                 </button>
               </div>
             </>
@@ -298,7 +336,7 @@ export default function CreateLinkFormPreview() {
           {activeType === "shorturl" && (
             <div className="mb-5">
               <label className="block text-[14px] font-bold text-neutral-800 mb-1.5">
-                URL Tujuan
+                {t.targetUrl}
               </label>
               <input
                 value={longUrl}
@@ -312,7 +350,7 @@ export default function CreateLinkFormPreview() {
           {/* Preview */}
           <div className="mb-5 rounded-2xl border-2 border-dashed border-violet-300 bg-violet-50/60 px-4 py-3.5">
             <p className="text-[11px] uppercase tracking-wider font-bold text-neutral-500 mb-1">
-              Preview link kamu
+              {t.previewTitle}
             </p>
             <p className="flex flex-wrap items-center gap-1.5 text-[13px] font-bold break-all">
               <span className="text-violet-700">door.id/{previewSlug}</span>
@@ -323,12 +361,12 @@ export default function CreateLinkFormPreview() {
 
           <button className={`w-full flex items-center justify-center gap-2 rounded-xl ${hardBorder} ${hardShadow} bg-violet-600 hover:bg-violet-500 py-4 text-[15px] font-bold text-white active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all`}>
             <Sparkles className="w-4 h-4" />
-            {CTA_LABEL[activeType]}
+            {ctaButtonLabels[activeType]}
           </button>
         </div>
 
         <p className="text-center text-[12px] text-neutral-600 mt-6 font-medium">
-          Dipakai buat jualan online, campaign, sampe katalog produk.
+          {t.footerDesc}
         </p>
       </div>
     </div>
