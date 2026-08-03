@@ -31,6 +31,7 @@ export default function CreateLinkFormPreview() {
   const [displayName, setDisplayName] = useState("")
   const [bioLinks, setBioLinks] = useState([{ label: "", url: "" }])
   const [longUrl, setLongUrl] = useState("")
+  const [includeQr, setIncludeQr] = useState(false)
   const { lang } = useI18n()
 
   const previewSlug = slug.trim() || "my-link"
@@ -85,6 +86,12 @@ export default function CreateLinkFormPreview() {
     addLink: lang === "id" ? "Tambah Link" : "Add Link",
     targetUrl: lang === "id" ? "URL Tujuan" : "Target URL",
     previewTitle: lang === "id" ? "Preview link kamu" : "Your link preview",
+    qrLabel: lang === "id" ? "Buat QR Code untuk link ini" : "Create QR Code for this link",
+    qrSubOn: lang === "id" ? "QR Code akan ditampilkan setelah link dibuat" : "QR Code will be shown after link is created",
+    qrSubOff: lang === "id" ? "Aktifkan untuk mendapatkan QR Code gratis" : "Enable to get a free QR Code",
+    qrPreview: lang === "id" ? "QR Code Preview" : "QR Code Preview",
+    qrHint: lang === "id" ? "QR Code akan muncul setelah link berhasil dibuat" : "QR Code will appear after link is created",
+    qrDownload: lang === "id" ? "Download QR Code (PNG)" : "Download QR Code (PNG)",
     footerDesc: lang === "id" ? "Dipakai buat jualan online, campaign, sampe katalog produk." : "Used for online selling, campaigns, and product catalogs.",
     btnWhatsapp: lang === "id" ? "Buat Link WhatsApp" : "Create WhatsApp Link",
     btnPaste: lang === "id" ? "Buat Paste" : "Create Paste",
@@ -353,10 +360,74 @@ export default function CreateLinkFormPreview() {
               </p>
             </div>
 
+            {/* QR Code Option Box - Large & Visible */}
+            <div 
+              onClick={() => setIncludeQr(!includeQr)}
+              className={`mb-5 p-4 rounded-2xl cursor-pointer transition-all ${
+                includeQr 
+                  ? `bg-yellow-300 ${hardBorder} ${hardShadow} ring-2 ring-yellow-400` 
+                  : `bg-neutral-50 border-2 border-dashed border-neutral-300 hover:border-violet-300 hover:bg-violet-50/30`
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                {/* Custom Checkbox */}
+                <div className={`w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 transition-all ${
+                  includeQr 
+                    ? 'bg-violet-600 border-2 border-black shadow-[2px_2px_0_0_#111]' 
+                    : 'bg-white border-2 border-neutral-300'
+                }`}>
+                  {includeQr && (
+                    <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <p className="text-[14px] font-bold text-neutral-900">
+                    📱 Buat QR Code untuk link ini
+                  </p>
+                  <p className="text-[12px] text-neutral-500 font-medium">
+                    {includeQr ? "QR Code akan ditampilkan setelah link dibuat" : "Aktifkan untuk mendapatkan QR Code gratis"}
+                  </p>
+                </div>
+                {/* QR Icon */}
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                  includeQr ? 'bg-white border-2 border-black' : 'bg-neutral-200 border border-neutral-300'
+                }`}>
+                  <svg className={`w-6 h-6 ${includeQr ? 'text-violet-600' : 'text-neutral-500'}`} viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 11h2v2H3v-2zm0-4h2v2H3V7zm4 0h2v2H7V7zm0 4h2v2H7v-2zm0 4h2v2H7v-2zm-4 0h2v2H3v-2zm0-8h2v2H3V7zm8 0h2v2h-2V7zm4 0h4v2h-4V7zm0 4h2v2h-2v-2zm0 4h4v2h-4v-2zm0-8h4v2h-4V7zm-4 0h2v2h-2V7zm0 8h2v2h-2v-2zm4 0h2v2h-2v-2zm4-12h2v2h-2V3zm0 4h2v2h-2V7zm0 4h2v2h-2v-2zm0 4h2v2h-2v-2zm0 4h2v2h-2v-2z"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Generate Button */}
             <button className={`w-full flex items-center justify-center gap-2 rounded-xl ${hardBorder} ${hardShadow} bg-violet-600 hover:bg-violet-500 py-4 text-[15px] font-bold text-white active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all`}>
               <Sparkles className="w-4 h-4" />
               {ctaButtonLabels[activeType]}
             </button>
+
+            {/* QR Code Preview Box - Appears after generation (placeholder for now) */}
+            {includeQr && (
+              <div className={`mt-5 p-5 rounded-2xl bg-white ${hardBorder} ${hardShadow} text-center`}>
+                <p className="text-[11px] uppercase tracking-wider font-bold text-neutral-500 mb-3">
+                  QR Code Preview
+                </p>
+                <div className="inline-flex p-3 bg-white border-2 border-black rounded-xl shadow-[3px_3px_0_0_#111]">
+                  <div className="w-[140px] h-[140px] bg-neutral-100 rounded-lg flex items-center justify-center">
+                    <svg className="w-20 h-20 text-neutral-300" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M3 11h2v2H3v-2zm0-4h2v2H3V7zm4 0h2v2H7V7zm0 4h2v2H7v-2zm0 4h2v2H7v-2zm-4 0h2v2H3v-2zm0-8h2v2H3V7zm8 0h2v2h-2V7zm4 0h4v2h-4V7zm0 4h2v2h-2v-2zm0 4h4v2h-4v-2zm0-8h4v2h-4V7zm-4 0h2v2h-2V7zm0 8h2v2h-2v-2zm4 0h2v2h-2v-2zm4-12h2v2h-2V3zm0 4h2v2h-2V7zm0 4h2v2h-2v-2zm0 4h2v2h-2v-2zm0 4h2v2h-2v-2z"/>
+                    </svg>
+                  </div>
+                </div>
+                <p className="text-[12px] text-neutral-500 mt-3 font-medium">
+                  QR Code akan muncul setelah link berhasil dibuat
+                </p>
+                <button className="mt-3 text-[12px] font-bold text-violet-600 hover:underline">
+                  ⬇️ Download QR Code (PNG)
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
