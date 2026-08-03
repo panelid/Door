@@ -171,7 +171,7 @@ export default function CreateLinkFormPreview() {
             </div>
 
             {/* Nama link */}
-            {activeType !== "linktree" && (
+            {(activeType === "whatsapp" || activeType === "paste" || activeType === "shorturl") && (
               <div className="mb-4">
                 <label className="block text-[14px] font-bold text-neutral-800 mb-1.5">
                   {t.linkName}
