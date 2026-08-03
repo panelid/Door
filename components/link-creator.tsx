@@ -59,7 +59,7 @@ export default function CreateLinkFormPreview() {
     h1_2: lang === "id" ? "Semua Link Kamu" : "All Your Links",
     h1_3: lang === "id" ? "Nyantol Di Sini." : "Hang Right Here.",
     desc1: lang === "id"
-      ? "Custom link WhatsApp, teks penting antar perangkat, bio sosial media, sampe URL panjang yang ribet — Door.id beresin semuanya jadi satu alamat pendek."
+      ? "Custom link WhatsApp, Bagikan/Pindahkan teks penting antar perangkat, bio sosial media, sampe URL panjang yang ribet — Door.id beresin semuanya jadi satu alamat pendek."
       : "Custom WhatsApp links, cross-device text sharing, social media bio, and long messy URLs — Door.id packs it all into one short address.",
     desc2: lang === "id"
       ? "Gampang diinget. Gampang dibagi. Gampang dipake buat jualan atau kerja tim."
