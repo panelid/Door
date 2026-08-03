@@ -522,18 +522,26 @@ export default function CreateLinkFormPreview() {
                   QR Code Preview
                 </p>
                 <div className="inline-flex p-3 bg-white border-2 border-black rounded-xl shadow-[3px_3px_0_0_#111]">
-                  <div className="w-[140px] h-[140px] bg-neutral-100 rounded-lg flex items-center justify-center">
-                    <svg className="w-20 h-20 text-neutral-300" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M3 11h2v2H3v-2zm0-4h2v2H3V7zm4 0h2v2H7V7zm0 4h2v2H7v-2zm0 4h2v2H7v-2zm-4 0h2v2H3v-2zm0-8h2v2H3V7zm8 0h2v2h-2V7zm4 0h4v2h-4V7zm0 4h2v2h-2v-2zm0 4h4v2h-4v-2zm0-8h4v2h-4V7zm-4 0h2v2h-2V7zm0 8h2v2h-2v-2zm4 0h2v2h-2v-2zm4-12h2v2h-2V3zm0 4h2v2h-2V7zm0 4h2v2h-2v-2zm0 4h2v2h-2v-2zm0 4h2v2h-2v-2z"/>
-                    </svg>
+                  <div className="w-[150px] h-[150px] bg-white rounded-lg flex items-center justify-center overflow-hidden">
+                    <img 
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://door.id/${encodeURIComponent(previewSlug)}`} 
+                      alt="QR Code Door.id"
+                      className="w-full h-full object-contain"
+                    />
                   </div>
                 </div>
                 <p className="text-[12px] text-neutral-500 mt-3 font-medium">
-                  QR Code akan muncul setelah link berhasil dibuat
+                  Scan untuk membuka <span className="font-bold text-violet-700">door.id/{previewSlug}</span>
                 </p>
-                <button className="mt-3 text-[12px] font-bold text-violet-600 hover:underline">
+                <a 
+                  href={`https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=https://door.id/${encodeURIComponent(previewSlug)}`} 
+                  download={`door-${previewSlug}-qr.png`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block mt-3 px-4 py-2 bg-violet-600 text-white text-[12px] font-bold rounded-xl border-2 border-black shadow-[2px_2px_0_0_#111] hover:bg-violet-500 active:translate-x-[1px] active:translate-y-[1px]"
+                >
                   ⬇️ Download QR Code (PNG)
-                </button>
+                </a>
               </div>
             )}
           </div>
