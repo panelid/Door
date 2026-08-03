@@ -42,13 +42,13 @@ export function Header() {
               </Link>
             ))}
 
-            {/* Language Toggle */}
+            {/* Language Toggle - High Contrast Neobrutalism */}
             <button
               onClick={toggle}
-              className={`flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg bg-white ${hardBorder} shadow-[2px_2px_0_0_#111] hover:bg-neutral-50 transition-all`}
+              className={`flex items-center gap-1.5 text-xs font-black px-3 py-1.5 rounded-lg bg-yellow-300 ${hardBorder} shadow-[2px_2px_0_0_#111] hover:bg-yellow-400 text-black transition-all`}
             >
-              <Globe className="w-3.5 h-3.5" />
-              {lang === "id" ? "EN" : "ID"}
+              <Globe className="w-4 h-4 text-black" />
+              <span>{lang === "id" ? "ENGLISH (EN)" : "INDONESIA (ID)"}</span>
             </button>
 
             <Button asChild size="sm" className={`ml-1 bg-black text-white hover:bg-neutral-800 font-bold rounded-xl ${hardBorder} shadow-[2px_2px_0_0_#111]`}>
