@@ -204,40 +204,42 @@ function SlugCompactRow({ slug }: { slug: any }) {
 
   const getTargetPreview = () => {
     switch (slug.type) {
-      case "whatsapp": return `wa.me/${slug.data?.phone || ""}`
-      case "paste": return slug.data?.title || "Teks Tersimpan"
-      case "linktree": return `${slug.data?.links?.length || 0} links`
-      case "shorturl": return slug.data?.url || ""
+      case "whatsapp": return `WA: ${slug.data?.phone || ""} ${slug.data?.message ? '— ' + slug.data.message : ''}`
+      case "paste": return slug.data?.title ? `Paste: ${slug.data.title}` : "Teks Tersimpan"
+      case "linktree": return `Bio: ${slug.data?.displayName || slug.slug} (${slug.data?.links?.length || 0} links)`
+      case "shorturl": return `Tujuan: ${slug.data?.url || ""}`
       default: return ""
     }
   }
 
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=https://door.id/${slug.slug}`
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=60x60&data=https://door.id/${slug.slug}`
 
   return (
     <div className={`rounded-xl bg-white px-4 py-2.5 ${hardBorder} shadow-[2px_2px_0_0_#111] flex items-center justify-between gap-3 transition-all hover:translate-x-[1px]`}>
       
-      {/* Left: Icon & Slug */}
+      {/* Left: Icon, Slug, & Full Target Details */}
       <div className="flex items-center gap-3 min-w-0 flex-1">
         <div className={`p-1.5 rounded-lg bg-neutral-100 border border-black shrink-0`}>
           {getIcon()}
         </div>
-        <div className="min-w-0 flex items-center gap-2.5">
-          <a href={`/${slug.slug}`} target="_blank" className="font-bold text-sm text-black hover:text-violet-600 truncate">
-            door.id/{slug.slug}
-          </a>
-          <span className="text-[11px] text-neutral-400 truncate hidden sm:inline font-medium">
-            ({getTargetPreview()})
-          </span>
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <a href={`/${slug.slug}`} target="_blank" className="font-bold text-sm text-black hover:text-violet-600 truncate">
+              door.id/{slug.slug}
+            </a>
+          </div>
+          <p className="text-[11px] text-neutral-500 truncate font-medium mt-0.5">
+            {getTargetPreview()}
+          </p>
         </div>
       </div>
 
-      {/* Middle: Views & QR Thumbnail */}
+      {/* Middle: Views (tanpa logo mata) & QR Thumbnail kecil */}
       <div className="flex items-center gap-3 shrink-0">
-        <span className="text-xs font-black text-neutral-700 bg-neutral-100 px-2 py-0.5 rounded-md border border-neutral-300">
-          👁️ {slug.visit_count || 0}
+        <span className="text-[11px] font-black text-neutral-800 bg-neutral-100 px-2 py-0.5 rounded-md border border-neutral-300">
+          {slug.visit_count || 0} views
         </span>
-        <div className="w-8 h-8 rounded-md bg-white border border-black p-0.5 shrink-0 overflow-hidden shadow-[1px_1px_0_0_#111]">
+        <div className="w-6 h-6 rounded bg-white border border-black p-0.5 shrink-0 overflow-hidden shadow-[1px_1px_0_0_#111]">
           <img src={qrUrl} alt="QR" className="w-full h-full object-contain" />
         </div>
       </div>
