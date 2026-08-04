@@ -214,7 +214,7 @@ function SlugCompactRow({ slug }: { slug: any }) {
             door.id/{slug.slug}
           </a>
         </div>
-        <p className="text-[10px] text-neutral-400 truncate font-medium leading-tight">
+        <p className="text-[9px] text-neutral-400 font-medium break-all leading-tight">
           {getTargetPreview()}
         </p>
       </div>
@@ -229,10 +229,10 @@ function SlugCompactRow({ slug }: { slug: any }) {
         </div>
       </div>
 
-      {/* Right: Actions (Icon Only) */}
-      <div className="flex items-center gap-1.5 shrink-0">
-        <Button asChild size="sm" className="bg-white hover:bg-neutral-100 text-black font-bold h-7 w-7 p-0 rounded-lg border-[1.5px] border-black shadow-[1.5px_1.5px_0_0_#111]">
-          <Link href={`/${slug.slug}`} target="_blank" title="Buka Link">
+      {/* Right: Actions (Icons Only, no text) */}
+      <div className="flex items-center gap-1 shrink-0">
+        <Button asChild size="sm" className="bg-white hover:bg-neutral-100 text-black font-bold h-7 w-7 p-0 rounded-lg border-[1.5px] border-black shadow-[1.5px_1.5px_0_0_#111]" title="Buka Link">
+          <Link href={`/${slug.slug}`} target="_blank">
             <ExternalLink className="h-3.5 w-3.5" />
           </Link>
         </Button>
