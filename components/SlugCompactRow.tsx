@@ -1,4 +1,4 @@
-import { ExternalLink, Edit, Trash2 } from "lucide-react"
+import { ExternalLink } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { EditSlugDialog } from "@/components/edit-slug-dialog"
@@ -17,25 +17,17 @@ export default function SlugCompactRow({ slug }: { slug: any }) {
     }
   }
 
-  // Target lines that might wrap to newline on mobile (truncate if too long)
   const targetDisplay = getTargetPreview()
 
   return (
     <div className={`rounded-xl bg-white px-4 py-2 ${hardBorder} shadow-[2px_2px_0_0_#111] flex items-center justify-between gap-2 transition-all hover:translate-x-[1px]`}>
-      {/* Left: Slug & Target (compact) */}
       <div className="flex-1 min-w-0">
         <a href={`/${slug.slug}`} target="_blank" className="font-bold text-[13px] text-black hover:text-violet-600 truncate block">
           door.id/{slug.slug}
         </a>
-        <span className="text-[9px] text-neutral-400 block truncate">
-          {targetDisplay}
-        </span>
+        <span className="text-[9px] text-neutral-400 block truncate">{targetDisplay}</span>
       </div>
-
-      {/* Middle: View Count Only (QR & Delete removed from primary view) */}
       <span className="text-[10px] text-neutral-500 shrink-0">{slug.visit_count || 0}</span>
-
-      {/* Right: 3 Action Icons Only */}
       <div className="flex items-center gap-0.5 shrink-0">
         <Button asChild size="sm" className="h-6 w-6 p-0 rounded-lg border-2 border-black shadow-[1px_1px_0_0_#111] bg-white hover:bg-neutral-100" title="Buka">
           <Link href={`/${slug.slug}`} target="_blank"><ExternalLink className="h-3 w-3" /></Link>
