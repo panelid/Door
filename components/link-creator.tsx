@@ -110,6 +110,23 @@ export default function CreateLinkFormPreview() {
     shorturl: t.btnShorturl,
   }
 
+  const handleDownloadQR = async (url: string, filename: string) => {
+    try {
+      const response = await fetch(url)
+      const blob = await response.blob()
+      const blobUrl = window.URL.createObjectURL(blob)
+      const link = document.createElement("a")
+      link.href = blobUrl
+      link.download = filename
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(blobUrl)
+    } catch (err) {
+      window.open(url, "_blank")
+    }
+  }
+
   const handleGenerate = async () => {
     if (!slug.trim()) return
     setSubmitting(true)
@@ -194,7 +211,24 @@ export default function CreateLinkFormPreview() {
             <div className="grid grid-cols-4 gap-1.5 mb-6">
               {LINK_TYPES.map(({ key, label, icon: Icon }) => {
                 const active = activeType === key
-                const handleGenerate = async () => {
+                const handleDownloadQR = async (url: string, filename: string) => {
+    try {
+      const response = await fetch(url)
+      const blob = await response.blob()
+      const blobUrl = window.URL.createObjectURL(blob)
+      const link = document.createElement("a")
+      link.href = blobUrl
+      link.download = filename
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(blobUrl)
+    } catch (err) {
+      window.open(url, "_blank")
+    }
+  }
+
+  const handleGenerate = async () => {
     if (!slug.trim()) return
     setSubmitting(true)
     setError("")
@@ -533,15 +567,12 @@ export default function CreateLinkFormPreview() {
                 <p className="text-[12px] text-neutral-500 mt-3 font-medium">
                   Scan untuk membuka <span className="font-bold text-violet-700">door.id/{previewSlug}</span>
                 </p>
-                <a 
-                  href={`https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=https://door.id/${encodeURIComponent(previewSlug)}`} 
-                  download={`door-${previewSlug}-qr.png`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button 
+                  onClick={() => handleDownloadQR(`https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=https://door.id/${encodeURIComponent(previewSlug)}`, `door-${previewSlug}-qr.png`)}
                   className="inline-block mt-3 px-4 py-2 bg-violet-600 text-white text-[12px] font-bold rounded-xl border-2 border-black shadow-[2px_2px_0_0_#111] hover:bg-violet-500 active:translate-x-[1px] active:translate-y-[1px]"
                 >
                   ⬇️ Download QR Code (PNG)
-                </a>
+                </button>
               </div>
             )}
           </div>

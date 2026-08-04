@@ -43,6 +43,23 @@ export function EditSlugDialog({ slug }: EditSlugDialogProps) {
   })
   const router = useRouter()
 
+  const handleDownloadQR = async (url: string, filename: string) => {
+    try {
+      const response = await fetch(url)
+      const blob = await response.blob()
+      const blobUrl = window.URL.createObjectURL(blob)
+      const link = document.createElement("a")
+      link.href = blobUrl
+      link.download = filename
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(blobUrl)
+    } catch (err) {
+      window.open(url, "_blank")
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
@@ -237,15 +254,12 @@ export function EditSlugDialog({ slug }: EditSlugDialogProps) {
             <span className="font-bold text-neutral-900">QR Code untuk door.id/{slug.slug}</span>
           </div>
           <img src={qrUrl} alt="QR Code" className="mx-auto w-24 h-24 object-contain rounded border-2 border-black shadow-[2px_2px_0_0_#111]" />
-          <a 
-            href={qrUrl} 
-            download={`door-${slug.slug}-qr.png`}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button 
+            onClick={() => handleDownloadQR(qrUrl, `door-${slug.slug}-qr.png`)}
             className="inline-block mt-3 text-xs font-bold text-violet-600 hover:underline"
           >
             ⬇️ Download QR (PNG)
-          </a>
+          </button>
         </div>
 
         {/* Edit Form */}
