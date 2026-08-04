@@ -41,21 +41,21 @@ export function DeleteSlugButton({ slugId }: { slugId: string }) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="destructive" size="sm">
-          <Trash2 className="h-4 w-4" />
+        <Button variant="destructive" size="sm" className="h-7 w-7 p-0">
+          <Trash2 className="h-3.5 w-3.5 text-white" />
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent className="bg-white text-black border-2 border-black">
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your link and it will no longer be accessible.
+          <AlertDialogTitle className="text-black font-bold">Yakin hapus link ini?</AlertDialogTitle>
+          <AlertDialogDescription className="text-neutral-700">
+            Tindakan ini tidak dapat dibatalkan. Link akan dihapus permanen dan tidak bisa diakses lagi.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
-            {isDeleting ? "Deleting..." : "Delete"}
+          <AlertDialogCancel className="bg-neutral-100 text-black border-2 border-black hover:bg-neutral-200">Batal</AlertDialogCancel>
+          <AlertDialogAction onClick={handleDelete} disabled={isDeleting} className="bg-red-600 text-white border-2 border-black hover:bg-red-700">
+            {isDeleting ? "Menghapus..." : "Hapus"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -107,7 +107,7 @@ export function EditSlugDialog({ slug }: EditSlugDialogProps) {
         return (
           <>
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
+              <Label htmlFor="phone" className="text-black font-semibold">Phone Number</Label>
               <Input
                 id="phone"
                 value={formData.phone}
@@ -117,7 +117,7 @@ export function EditSlugDialog({ slug }: EditSlugDialogProps) {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="message">Custom Message (Optional)</Label>
+              <Label htmlFor="message" className="text-black font-semibold">Custom Message (Optional)</Label>
               <Textarea
                 id="message"
                 value={formData.message}
@@ -132,7 +132,7 @@ export function EditSlugDialog({ slug }: EditSlugDialogProps) {
         return (
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="content">Content</Label>
+              <Label htmlFor="content" className="text-black font-semibold">Content</Label>
               <Textarea
                 id="content"
                 value={formData.content}
@@ -143,7 +143,7 @@ export function EditSlugDialog({ slug }: EditSlugDialogProps) {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Edit Password (Optional)</Label>
+              <Label htmlFor="password" className="text-black font-semibold">Edit Password (Optional)</Label>
               <Input
                 id="password"
                 type="password"
@@ -158,7 +158,7 @@ export function EditSlugDialog({ slug }: EditSlugDialogProps) {
       case "shorturl":
         return (
           <div className="space-y-2">
-            <Label htmlFor="url">Destination URL</Label>
+            <Label htmlFor="url" className="text-black font-semibold">Destination URL</Label>
             <Input
               id="url"
               type="url"
@@ -172,7 +172,7 @@ export function EditSlugDialog({ slug }: EditSlugDialogProps) {
       case "linktree":
         return (
           <div className="space-y-4">
-            <Label>Links</Label>
+            <Label className="text-black font-semibold">Links</Label>
             {formData.links.map((link: any, index: number) => (
               <div key={index} className="space-y-2 p-4 border rounded-lg">
                 <Input
@@ -232,10 +232,10 @@ export function EditSlugDialog({ slug }: EditSlugDialogProps) {
           <Pencil className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white text-black">
         <DialogHeader>
-          <DialogTitle>Edit Link</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-black">Edit Link</DialogTitle>
+          <DialogDescription className="text-neutral-700">
             <div className="flex items-center gap-4 text-sm">
               <span>door.id/{slug.slug}</span>
               <span className="flex items-center gap-1">
@@ -264,7 +264,7 @@ export function EditSlugDialog({ slug }: EditSlugDialogProps) {
 
         {/* Edit Form */}
         <form onSubmit={handleSubmit}>
-          <div className="space-y-4 py-4">{renderFormFields()}</div>
+          <div className="space-y-4 py-4 text-black">{renderFormFields()}</div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancel
