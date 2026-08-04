@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -16,9 +16,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { createClient } from "@/lib/supabase/client"
-import { Pencil } from "lucide-react"
+import { Pencil, QrCode, Eye } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
 import { toast } from "sonner"
 
 interface EditSlugDialogProps {
@@ -31,23 +30,13 @@ export function EditSlugDialog({ slug }: EditSlugDialogProps) {
   const [formData, setFormData] = useState(() => {
     switch (slug.type) {
       case "whatsapp":
-        return {
-          phone: slug.data.phone || "",
-          message: slug.data.message || "",
-        }
+        return { phone: slug.data.phone || "", message: slug.data.message || "" }
       case "paste":
-        return {
-          content: slug.data.content || "",
-          password: slug.paste_password || "",
-        }
+        return { content: slug.data.content || "", password: slug.paste_password || "" }
       case "shorturl":
-        return {
-          url: slug.data.url || "",
-        }
+        return { url: slug.data.url || "" }
       case "linktree":
-        return {
-          links: slug.data.links || [],
-        }
+        return { links: slug.data.links || [] }
       default:
         return {}
     }
@@ -60,47 +49,25 @@ export function EditSlugDialog({ slug }: EditSlugDialogProps) {
 
     try {
       if (slug.type === "paste") {
-        // Use API endpoint for paste to handle password verification and history
         const { password, content } = formData as any
-        
         const res = await fetch("/api/paste/update", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            slug: slug.slug,
-            content: content,
-            password: password || undefined,
-          }),
+          body: JSON.stringify({ slug: slug.slug, content, password: password || undefined }),
         })
-
         if (!res.ok) {
           const data = await res.json()
           throw new Error(data.error || "Failed to update paste")
         }
-
-        // Update password in DB if changed (for owner only)
         if (password !== slug.paste_password) {
           const supabase = createClient()
-          const { error } = await supabase
-            .from("slugs")
-            .update({ paste_password: password || null })
-            .eq("id", slug.id)
-          
+          const { error } = await supabase.from("slugs").update({ paste_password: password || null }).eq("id", slug.id)
           if (error) throw error
         }
       } else {
-        // For non-paste types, use direct Supabase update
         const supabase = createClient()
-        const updateData: any = {
-          updated_at: new Date().toISOString(),
-          data: formData,
-        }
-
-        const { error } = await supabase
-          .from("slugs")
-          .update(updateData)
-          .eq("id", slug.id)
-
+        const updateData: any = { updated_at: new Date().toISOString(), data: formData }
+        const { error } = await supabase.from("slugs").update(updateData).eq("id", slug.id)
         if (error) throw error
       }
 
@@ -113,6 +80,9 @@ export function EditSlugDialog({ slug }: EditSlugDialogProps) {
       setIsLoading(false)
     }
   }
+
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://door.id/${slug.slug}`
+  const viewCount = slug.visit_count || 0
 
   const renderFormFields = () => {
     switch (slug.type) {
@@ -164,9 +134,7 @@ export function EditSlugDialog({ slug }: EditSlugDialogProps) {
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 placeholder="Leave empty for public editing"
               />
-              <p className="text-xs text-muted-foreground">
-                Set a password to require authentication before allowing others to edit this paste
-              </p>
+              <p className="text-xs text-muted-foreground">Set a password to require authentication before allowing others to edit this paste</p>
             </div>
           </div>
         )
@@ -251,9 +219,36 @@ export function EditSlugDialog({ slug }: EditSlugDialogProps) {
         <DialogHeader>
           <DialogTitle>Edit Link</DialogTitle>
           <DialogDescription>
-            Update the details for your {slug.type} link: {slug.slug}
+            <div className="flex items-center gap-4 text-sm">
+              <span>door.id/{slug.slug}</span>
+              <span className="flex items-center gap-1">
+                <Eye className="h-3.5 w-3.5" />
+                {viewCount} views
+              </span>
+            </div>
+            <span className="text-xs">Update the details for your {slug.type} link</span>
           </DialogDescription>
         </DialogHeader>
+
+        {/* QR Code Preview Section */}
+        <div className="border-2 border-dashed border-neutral-300 rounded-2xl p-5 mb-4 text-center">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <QrCode className="h-4 w-4 text-violet-600" />
+            <span className="font-bold text-neutral-900">QR Code untuk door.id/{slug.slug}</span>
+          </div>
+          <img src={qrUrl} alt="QR Code" className="mx-auto w-24 h-24 object-contain rounded border-2 border-black shadow-[2px_2px_0_0_#111]" />
+          <a 
+            href={qrUrl} 
+            download={`door-${slug.slug}-qr.png`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block mt-3 text-xs font-bold text-violet-600 hover:underline"
+          >
+            ⬇️ Download QR (PNG)
+          </a>
+        </div>
+
+        {/* Edit Form */}
         <form onSubmit={handleSubmit}>
           <div className="space-y-4 py-4">{renderFormFields()}</div>
           <DialogFooter>
