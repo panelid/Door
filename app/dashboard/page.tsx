@@ -192,22 +192,12 @@ export default async function DashboardPage() {
 function SlugCompactRow({ slug }: { slug: any }) {
   const hardBorder = "border-[2px] border-black"
 
-  const getIcon = () => {
-    switch (slug.type) {
-      case "whatsapp": return <MessageSquare className="h-3.5 w-3.5 text-emerald-700" />
-      case "paste": return <FileText className="h-3.5 w-3.5 text-purple-700" />
-      case "linktree": return <Users className="h-3.5 w-3.5 text-blue-700" />
-      case "shorturl": return <Link2 className="h-3.5 w-3.5 text-amber-700" />
-      default: return <Link2 className="h-3.5 w-3.5 text-violet-700" />
-    }
-  }
-
   const getTargetPreview = () => {
     switch (slug.type) {
-      case "whatsapp": return `WA: ${slug.data?.phone || ""} ${slug.data?.message ? '— ' + slug.data.message : ''}`
-      case "paste": return slug.data?.title ? `Paste: ${slug.data.title}` : "Teks Tersimpan"
-      case "linktree": return `Bio: ${slug.data?.displayName || slug.slug} (${slug.data?.links?.length || 0} links)`
-      case "shorturl": return `Tujuan: ${slug.data?.url || ""}`
+      case "whatsapp": return `${slug.data?.phone || ""} — ${slug.data?.message || ""}`
+      case "paste": return slug.data?.title || slug.data?.content || "Teks Tersimpan"
+      case "linktree": return `${slug.data?.displayName || slug.slug} (${slug.data?.links?.length || 0} links)`
+      case "shorturl": return slug.data?.url || ""
       default: return ""
     }
   }
@@ -215,40 +205,35 @@ function SlugCompactRow({ slug }: { slug: any }) {
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=60x60&data=https://door.id/${slug.slug}`
 
   return (
-    <div className={`rounded-xl bg-white px-4 py-2.5 ${hardBorder} shadow-[2px_2px_0_0_#111] flex items-center justify-between gap-3 transition-all hover:translate-x-[1px]`}>
+    <div className={`rounded-xl bg-white px-4 py-2 ${hardBorder} shadow-[2px_2px_0_0_#111] flex items-center justify-between gap-3 transition-all hover:translate-x-[1px]`}>
       
-      {/* Left: Icon, Slug, & Full Target Details */}
-      <div className="flex items-center gap-3 min-w-0 flex-1">
-        <div className={`p-1.5 rounded-lg bg-neutral-100 border border-black shrink-0`}>
-          {getIcon()}
+      {/* Left: Slug & Target Details (No Icon) */}
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <a href={`/${slug.slug}`} target="_blank" className="font-bold text-[13.5px] text-black hover:text-violet-600 truncate">
+            door.id/{slug.slug}
+          </a>
         </div>
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <a href={`/${slug.slug}`} target="_blank" className="font-bold text-sm text-black hover:text-violet-600 truncate">
-              door.id/{slug.slug}
-            </a>
-          </div>
-          <p className="text-[11px] text-neutral-500 truncate font-medium mt-0.5">
-            {getTargetPreview()}
-          </p>
-        </div>
+        <p className="text-[10px] text-neutral-400 truncate font-medium leading-tight">
+          {getTargetPreview()}
+        </p>
       </div>
 
-      {/* Middle: Views (tanpa logo mata) & QR Thumbnail kecil */}
-      <div className="flex items-center gap-3 shrink-0">
-        <span className="text-[11px] font-black text-neutral-800 bg-neutral-100 px-2 py-0.5 rounded-md border border-neutral-300">
+      {/* Middle: Views & QR Thumbnail (Minimalist) */}
+      <div className="flex items-center gap-2.5 shrink-0">
+        <span className="text-[10px] font-bold text-neutral-500">
           {slug.visit_count || 0} views
         </span>
-        <div className="w-6 h-6 rounded bg-white border border-black p-0.5 shrink-0 overflow-hidden shadow-[1px_1px_0_0_#111]">
+        <div className="w-5 h-5 rounded-[4px] bg-white border-[1.5px] border-black p-0.5 shrink-0 overflow-hidden shadow-[1px_1px_0_0_#111]">
           <img src={qrUrl} alt="QR" className="w-full h-full object-contain" />
         </div>
       </div>
 
-      {/* Right: Actions */}
+      {/* Right: Actions (Icon Only) */}
       <div className="flex items-center gap-1.5 shrink-0">
-        <Button asChild size="sm" className="bg-neutral-100 hover:bg-neutral-200 text-black font-bold text-[11px] h-7 px-2.5 rounded-lg border border-black shadow-[1px_1px_0_0_#111]">
-          <Link href={`/${slug.slug}`} target="_blank">
-            <ExternalLink className="h-3 w-3 mr-1" /> Buka
+        <Button asChild size="sm" className="bg-white hover:bg-neutral-100 text-black font-bold h-7 w-7 p-0 rounded-lg border-[1.5px] border-black shadow-[1.5px_1.5px_0_0_#111]">
+          <Link href={`/${slug.slug}`} target="_blank" title="Buka Link">
+            <ExternalLink className="h-3.5 w-3.5" />
           </Link>
         </Button>
         <EditSlugDialog slug={slug} />
