@@ -5,7 +5,7 @@ import Link from "next/link"
 import { Link2, Plus } from "lucide-react"
 import SlugCompactRow from "@/components/SlugCompactRow"
 import { EditSlugDialog } from "@/components/edit-slug-dialog"
-import DeleteSlugButton from "@/components/delete-slug-button"
+import { DeleteSlugButton } from "@/components/delete-slug-button"
 
 export default async function DashboardPage() {
   const supabase = await createClient()

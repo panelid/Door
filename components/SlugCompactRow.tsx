@@ -3,7 +3,7 @@ import { ExternalLink } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { EditSlugDialog } from "@/components/edit-slug-dialog"
-import DeleteSlugButton from "@/components/delete-slug-button"
+import { DeleteSlugButton } from "@/components/delete-slug-button"
 
 export default function SlugCompactRow({ slug }: { slug: any }) {
   const hardBorder = "border-[2px] border-black"
