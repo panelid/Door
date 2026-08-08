@@ -2,7 +2,7 @@ import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { Link2, Plus } from "lucide-react"
+import { Link2, Plus, Settings } from "lucide-react"
 import SlugCompactRow from "@/components/SlugCompactRow"
 import { EditSlugDialog } from "@/components/edit-slug-dialog"
 import { DeleteSlugButton } from "@/components/delete-slug-button"
@@ -58,6 +58,11 @@ export default async function DashboardPage() {
 
           <div className="flex items-center gap-2.5">
             <span className="text-xs font-black text-black hidden sm:inline">{user.email}</span>
+            <Button asChild size="sm" className={`bg-amber-400 hover:bg-amber-500 text-neutral-900 font-bold rounded-xl border-2 border-black shadow-[2px_2px_0_0_#111] h-8 text-xs px-3`}>
+              <Link href="/settings">
+                <Settings className="h-3.5 w-3.5 mr-1" /> Custom Domain
+              </Link>
+            </Button>
             <Button asChild size="sm" className={`bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl border-2 border-black shadow-[2px_2px_0_0_#111] h-8 text-xs px-3`}>
               <Link href="/">
                 <Plus className="h-3.5 w-3.5 mr-1" /> Buat Link
