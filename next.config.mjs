@@ -3,9 +3,9 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  experimental: {
+    turbopack: false,
+  }
 }
 
 export default nextConfig
