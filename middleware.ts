@@ -1,5 +1,4 @@
 import { NextResponse, NextRequest } from "next/server";
-import { createClient } from "@/lib/supabase/server";
 
 // Middleware to handle custom domain routing
 export async function middleware(request: NextRequest) {
@@ -14,22 +13,20 @@ export async function middleware(request: NextRequest) {
     !hostname.endsWith("door.id");
 
   if (isCustomDomain) {
-    // Rewrite custom domain requests to handle slugs or root
-    // e.g. customdomain.com/my-slug -> /custom-domain-handler?domain=customdomain.com&slug=my-slug
     const pathname = url.pathname;
     
-    // If it's root, we can show user's profile or default landing
+    // If it's root on custom domain, redirect or show root page
     if (pathname === "/" || pathname === "") {
-      url.pathname = `/domain-root`;
-      url.searchParams.set("domain", hostname);
-      return NextResponse.rewrite(url);
+      url.pathname = `/`;
+      const res = NextResponse.rewrite(url);
+      res.headers.set("x-door-custom-domain", hostname);
+      return res;
     }
 
     // If it's a slug path e.g. /my-slug
     const slug = pathname.slice(1);
     if (slug && !slug.startsWith("_next") && !slug.startsWith("api")) {
       url.pathname = `/[slug]`;
-      // We can pass the custom domain info via headers or query
       const res = NextResponse.rewrite(url);
       res.headers.set("x-door-custom-domain", hostname);
       return res;
@@ -48,12 +45,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
     "/((?!_next/static|_next/image|favicon.ico).*)",
   ],
 };
