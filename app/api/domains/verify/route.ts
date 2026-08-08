@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
-import { getSessionUser } from "@/lib/auth/session";
-import { resolveTxt } from "dns/promises";
+import { createClient } from "@/lib/supabase/server";
 
 // POST /api/domains/verify - Verify domain ownership via DNS TXT record
 export async function POST(request: Request) {
   try {
-    const user = await getSessionUser(request);
-    if (!user) {
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -17,17 +18,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Domain ID is required" }, { status: 400 });
     }
 
-    const db = (globalThis as any).process?.env?.DB || (request as any).env?.DB;
-    if (!db) {
-      return NextResponse.json({ error: "Database binding not available" }, { status: 500 });
-    }
+    // Fetch domain record owned by current user
+    const { data: domainRecord, error: fetchError } = await supabase
+      .from("custom_domains")
+      .select("id, domain, verification_token, is_verified")
+      .eq("id", domainId)
+      .eq("user_id", user.id)
+      .single();
 
-    // Fetch domain record
-    const domainRecord = await db.prepare(
-      "SELECT id, domain, verification_token, is_verified FROM custom_domains WHERE id = ? AND user_id = ?"
-    ).bind(domainId, user.id).first();
-
-    if (!domainRecord) {
+    if (fetchError || !domainRecord) {
       return NextResponse.json({ error: "Domain not found" }, { status: 404 });
     }
 
@@ -37,12 +36,15 @@ export async function POST(request: Request) {
 
     // DNS TXT Record verification
     try {
-      const txtRecords = await resolveTxt(domainRecord.domain);
+      // Dynamic import for DNS resolution
+      const dns = await import("dns/promises");
+      
+      // Note: resolveTxt returns string[][], where each inner string[] is a TXT record
+      // and each string is a chunk of that record
+      const txtRecords = await dns.resolveTxt(domainRecord.domain);
       const expectedRecord = domainRecord.verification_token;
       
       // Check if any TXT record matches our verification token
-      // resolveTxt returns string[][], where each outer array is a TXT record
-      // and each inner string is a chunk of that record
       const verified = txtRecords.some((record: string[]) => {
         // Join all chunks of the TXT record and check if it contains our token
         const fullRecord = record.join('');
@@ -51,9 +53,16 @@ export async function POST(request: Request) {
 
       if (verified) {
         // Update domain as verified
-        await db.prepare(
-          "UPDATE custom_domains SET is_verified = 1, verified_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?"
-        ).bind(domainId).run();
+        const { error: updateError } = await supabase
+          .from("custom_domains")
+          .update({ 
+            is_verified: true, 
+            verified_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", domainId);
+
+        if (updateError) throw updateError;
 
         return NextResponse.json({ 
           success: true, 
