@@ -33,17 +33,20 @@ export default async function SlugPage({ params }: { params: Promise<{ slug: str
   const { slug } = await params
 
   // Reserved routes that should not be treated as slugs
-  const reservedRoutes = ["dashboard", "auth", "api", "admin", "settings", "_next", "public"]
-  if (reservedRoutes.includes(slug.toLowerCase())) {
-    // Redirect reserved routes to 404 page instead of treating as slugs
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold mb-4">404 - Not Found</h1>
-          <p className="text-muted-foreground">The page you are looking for does not exist.</p>
-        </div>
-      </div>
-    )
+  const reservedRoutes: Record<string, string> = {
+    "dashboard": "/dashboard",
+    "settings": "/settings",
+    "auth": "/auth/login",
+    "admin": "/",
+    "_next": "/",
+    "public": "/",
+    "api": "/",
+  }
+  
+  const lowerSlug = slug.toLowerCase()
+  if (reservedRoutes[lowerSlug]) {
+    // Redirect reserved routes to their actual pages
+    redirect(reservedRoutes[lowerSlug])
   }
 
   const supabase = await createClient()
